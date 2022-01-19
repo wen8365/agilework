@@ -24,3 +24,9 @@ hs_err_pid*
 
 # sonar scanner workspace
 .scannerwork/
+
+# idea conifg
+.idea/
+
+# maven build directory
+target/
