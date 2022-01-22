@@ -1,6 +1,5 @@
-package com.agilework.sims;
+package com.agilework.sims.controller;
 
-import com.agilework.sims.controller.LoginController;
 import com.agilework.sims.util.ErrorCode;
 import com.agilework.sims.vo.LoginReq;
 import com.agilework.sims.vo.LoginResp;
@@ -11,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class TestLogin {
+public class LoginControllerTests {
 
     @Autowired
     private LoginController loginController;
