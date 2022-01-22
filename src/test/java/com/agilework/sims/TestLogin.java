@@ -21,9 +21,15 @@ public class TestLogin {
         LoginReq req = new LoginReq("MF21320138", "Abc123456=");
         LoginResp resp = loginController.login(req);
         Assertions.assertEquals(resp.getErrCode(), ErrorCode.NORMAL.getCode());
+        Assertions.assertEquals(resp.getRole(), 0);
+        Assertions.assertNotNull(resp.getName());
+        Assertions.assertNotNull(resp.getSessionId());
 
         LoginResp resp1 = loginController.isLogin(resp.getSessionId());
         Assertions.assertEquals(resp1.getErrCode(), ErrorCode.NORMAL.getCode());
+        Assertions.assertEquals(resp1.getRole(), 0);
+        Assertions.assertNull(resp1.getName());
+        Assertions.assertNull(resp1.getSessionId());
 
         LogoutResp resp2 = loginController.logout(resp.getSessionId());
         Assertions.assertEquals(resp2.getErrCode(), ErrorCode.NORMAL.getCode());
@@ -45,7 +51,7 @@ public class TestLogin {
 
     @Test
     public void testUserNotExists() {
-        LoginReq req = new LoginReq("MF21320139", "Abc123456=");
+        LoginReq req = new LoginReq("MF21320139", "aBc98765!~");
         LoginResp resp = loginController.login(req);
         Assertions.assertEquals(resp.getErrCode(), ErrorCode.LOGIN_USERNAME_PASSWORD_ERROR.getCode());
     }

@@ -20,7 +20,8 @@ import java.util.regex.Pattern;
 
 @RestController
 public class LoginController {
-    private final static String TAG = "LoginController";
+    private static final String TAG = "LoginController";
+    private static final String UNICODE_CHAR = "[\\p{Cn}]";
 
     @Value("${login.pattern.username}")
     private String uPattern;
@@ -35,8 +36,8 @@ public class LoginController {
     public LoginResp login(@RequestBody @NonNull LoginReq req) {
         String userName = req.getUserName();
         String password = req.getPassword();
-        String uName = Normalizer.normalize(userName.replaceAll("[\\p{Cn}]", ""), Normalizer.Form.NFKC);
-        String passwd = Normalizer.normalize(password.replaceAll("[\\p{Cn}]", ""), Normalizer.Form.NFKC);
+        String uName = Normalizer.normalize(userName.replaceAll(UNICODE_CHAR, ""), Normalizer.Form.NFKC);
+        String passwd = Normalizer.normalize(password.replaceAll(UNICODE_CHAR, ""), Normalizer.Form.NFKC);
         // verify username
         if (isInvalid(uName, uPattern)) {
             SLogger.warn(TAG, "invalid user attempt login, userName=" + uName);
@@ -52,14 +53,14 @@ public class LoginController {
 
     @PostMapping("/logout")
     public LogoutResp logout(String sessionId) {
-        String id = Normalizer.normalize(sessionId.replaceAll("[\\p{Cn}]", ""), Normalizer.Form.NFKC);
+        String id = Normalizer.normalize(sessionId.replaceAll(UNICODE_CHAR, ""), Normalizer.Form.NFKC);
         SLogger.info(TAG, "user logout start, sessionId=" + id);
         return loginService.logout(id);
     }
 
     @GetMapping("/isLogin")
     public LoginResp isLogin(String sessionId) {
-        String id = Normalizer.normalize(sessionId.replaceAll("[\\p{Cn}]", ""), Normalizer.Form.NFKC);
+        String id = Normalizer.normalize(sessionId.replaceAll(UNICODE_CHAR, ""), Normalizer.Form.NFKC);
         SLogger.info(TAG, "check login, sessionId=" + id);
         return loginService.isLogin(id);
     }

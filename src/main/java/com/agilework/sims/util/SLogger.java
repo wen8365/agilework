@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 public final class SLogger {
     private static final Logger logger = LoggerFactory.getLogger(SLogger.class);
     private static final String LOG_TEMPLATE = "SIMS --> {}: {}";
+    private SLogger() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static void info(String tag, String msg) {
         logger.info(LOG_TEMPLATE, tag, msg);

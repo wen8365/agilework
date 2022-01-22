@@ -23,7 +23,7 @@ public class SessionServiceImpl implements SessionService {
         UUID uuid = UUID.randomUUID();
         Session session = new Session(uuid.toString(), user);
         Instant instant = Instant.now();
-        instant.plus(Duration.ofMinutes(sessionExpire));
+        instant = instant.plus(Duration.ofMinutes(sessionExpire));
         session.setExpireTime(instant);
         sessionMap.put(uuid.toString(), session);
 
@@ -49,7 +49,7 @@ public class SessionServiceImpl implements SessionService {
         }
         Instant oldExpire = session.getExpireTime();
         Instant instant = Instant.now();
-        instant.plus(Duration.ofMinutes(sessionExpire));
+        instant = instant.plus(Duration.ofMinutes(sessionExpire));
         session.setExpireTime(instant);
 
         SLogger.info(TAG, "update session expire time, old=" + oldExpire + ", new=" + instant);
@@ -74,6 +74,7 @@ public class SessionServiceImpl implements SessionService {
     private boolean isSessionInvalid(String sessionId) {
         try {
             UUID uuid = UUID.fromString(sessionId);
+            SLogger.info(TAG, "session id verification passed, id=" + uuid);
         } catch (IllegalArgumentException iae) {
             SLogger.error(TAG, "invalid session, id=" + sessionId);
             return true;

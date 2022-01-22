@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
-    private final static String TAG = "LoginService";
+    private static final String TAG = "LoginService";
 
     @Autowired
     private UserRepository userRepository;
