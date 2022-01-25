@@ -25,3 +25,86 @@ a {
 .right {
 	text-align: right;
 }
+/* 蓝色按钮  */
+.btn {
+	width: 150px;
+	height: 40px;
+	color: white;
+	background-color: deepskyblue;
+	border: 0px;
+}
+.btn:hover {
+	background-color: dodgerblue;
+	cursor: pointer;
+}
+/* 子页面盒子样式 */
+.subPageBox {
+	padding: 80px 200px 0px;
+}
+/* 下拉列表 */
+.select {
+	width: 309px;
+	height: 40px;
+	padding: 6px;
+	border: 1px darkgrey solid;
+}
+/* 搜索框 */
+.search {
+	width: 258px;
+	height: 39px;
+	padding: 0px 35px 0px 10px;
+	border: 1px darkgrey solid;
+}
+/* 图标样式 */
+.operator i {
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+	width: 39px;
+	height: 39px;
+	line-height: 39px;
+	font-size: 24px;
+	color: white;
+	background-color: deepskyblue;
+	margin-left: -44px;
+	cursor: pointer;
+}
+/* 表格样式 */
+.table {
+	width: 100%;
+	margin-top: 5px;
+	border-collapse: collapse;
+}
+.line {
+	border: 0px;
+	padding: 10px 0px;
+}
+/* 分页样式  */
+.page {
+	text-align: center;
+}
+.page a {
+	text-decoration: none;
+}
+.page span {
+	display: inline-block;
+	margin: 5px;
+	width: 23px;
+	height: 23px;
+	text-align: center;
+}
+.page span:hover {
+	border-radius: 50%;
+	color: white;
+	background-color: dodgerblue;
+	cursor: pointer;
+}
+.pageActive {
+	border-radius: 50%;
+	color: white;
+	background-color: deepskyblue;
+}
+.pageDefaultStyle {
+	color: black;
+	cursor: auto;
+}
