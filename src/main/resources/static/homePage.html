@@ -52,18 +52,18 @@
 					logout: function() {
 						var url=this.urls[1]+"?sessionId="+this.sessionId;
 						var jsonData={};
-		                //发送 post请求
-		                this.$http.post(url, jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                   	if(res.body==0) {
-		                   		location.href="login.html";
-		                   	} else if(res.body==1201) {
-		                   		alert("用户名或会话id错误！");
-		                   	}
-		                },function(res){
-		                    console.log(res);
-		                });
+						//发送 post请求
+						this.$http.post(url, jsonData, {
+							emulateJSON: true
+						}).then(function(res){
+							if(res.body==0) {
+								location.href="login.html";
+							} else if(res.body==1201) {
+								alert("用户名或会话id错误！");
+							}
+						},function(res){
+						    console.log(res);
+						});
 					}
 				},
 				mounted() {
