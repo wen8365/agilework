@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>SIMS注册页</title>
+		<style>
+			.box {
+				display: inline-block;
+				width: 32%;
+				height: 65%;
+				text-align: center;
+			}
+			td {
+				padding: 5px;
+			}
+			input {
+				width: 300px;
+				height: 40px;
+				padding: 0px 10px;
+				border: 1px darkgrey solid;
+			}
+			input[type="button"] {
+				width: 322px;
+				color: white;
+				background-color: deepskyblue;
+				border: 0px;
+			}
+			input[type="button"]:hover {
+				background-color: dodgerblue;
+			}
+		</style>
+		<!-- common.css -->
+		<link rel="stylesheet" href="css/common.css" />
+		<!-- Vue -->
+		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<table class="center box">	
+				<tbody>
+					<tr>
+						<td></td>
+						<td>
+							<h2>学生注册</h2>
+						</td>
+					</tr>
+					<tr>
+						<td class="right">学生号</td>
+						<td>
+							<input type="text" v-model="teacherNo" />
+						</td>
+					</tr>
+					<tr>
+						<td class="right">姓名</td>
+						<td>
+							<input type="text" v-model="teacherName" />
+						</td>
+					</tr>
+					<tr>
+						<td class="right">手机</td>
+						<td>
+							<input type="text" v-model="phone" />
+						</td>
+					</tr>
+					<tr>
+						<td class="right">邮箱</td>
+						<td>
+							<input type="text" v-model="email" />
+						</td>
+					</tr>
+					<tr>
+						<td class="right">密码</td>
+						<td>
+							<input type="password" v-model="passoword" />
+						</td>
+					</tr>
+					<tr>
+						<td class="right">确认密码</td>
+						<td>
+							<input type="password" v-model="confirmPassword" />
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<input type="button" value="注册" v-on:click="doRegister()" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					teacherNo: '',
+					teacherName: '',
+					phone: '',
+					email: '',
+					passoword: '',
+					confirmPassword: '',
+					urls: [
+						''
+					]
+				},
+				methods: {
+					doCheck: function() {
+						if(this.teacherNo=='') {
+							alert("学生号不能为空！");
+							return false;
+						}
+						if(this.teacherName=='') {
+							alert("姓名不能为空！");
+							return false;
+						}
+						if(this.phone=='') {
+							alert("手机不能为空！");
+							return false;
+						}
+						if(this.email=='') {
+							alert("邮箱不能为空！");
+							return false;
+						}
+						if(this.passoword=='') {
+							alert("密码不能为空！");
+							return false;
+						}
+						if(this.confirmPassword=='') {
+							alert("确认密码不能为空！");
+							return false;
+						}
+						if(this.passoword!=this.confirmPassword) {
+							alert("密码和确认密码不一致！");
+							return false;
+						}
+
+						return true;
+					},
+					doRegister: function() {
+						if(this.doCheck()) {
+							var jsonData={
+								teacherNo: '',
+								teacherName: '',
+								phone: '',
+								email: '',
+								passoword: '',
+							};
+							console.log(jsonData);
+			                //发送 post请求
+			                this.$http.post(this.urls[0], jsonData, {
+			                	emulateJSON: true
+			                }).then(function(res){
+			                   	if(res.body==1) {
+			                   		alert("注册成功！");
+			                   	} else {
+			                   		alert("注册失败！");
+			                   	}
+			                },function(res){
+			                    console.log(res);
+			                });
+						}
+					}
+				}
+			});
+		</script>
+	</body>
+</html>
