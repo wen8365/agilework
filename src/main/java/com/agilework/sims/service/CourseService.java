@@ -54,4 +54,12 @@ public class CourseService {
             return "Delete Success.";
         }
     }
+    public boolean addCourses(List<Course>list){
+        List<Course>result=courseRepository.saveAll(list);
+        if(result.size()==list.size()){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

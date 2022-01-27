@@ -7,9 +7,8 @@ import com.agilework.sims.service.CourseService;
 import com.agilework.sims.service.SessionService;
 import com.agilework.sims.util.SLogger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,5 +50,13 @@ public class CourseController {
             return courseService.findCourseByCourseNo(courseNo);
         }
     }
+    @PostMapping("/insertCourses")
+    @ResponseBody
+    public Map<String, Object> addCourses(@RequestBody @NonNull List<Course>list){
+        boolean flag=courseService.addCourses(list);
+        String message = flag ? "插入成功" : "插入失败";
+        return resultMap(flag,message);
+    }
+
 }
 
