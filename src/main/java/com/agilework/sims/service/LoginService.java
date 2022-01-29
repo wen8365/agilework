@@ -25,9 +25,8 @@ public class LoginService {
         if (user != null) {
             user.setPassword(""); // no need password
             String sessionId = sessionService.createSession(user);
-            String log = "user login SUCCESS, userNo=%s, userName=%s, role=%d, sessionId=%s";
-            SLogger.info(TAG, String.format(log,
-                    userNo, user.getUserName(), user.getRole(), sessionId));
+            String log = "user login SUCCESS, userNo=%s, role=%d, sessionId=%s";
+            SLogger.info(TAG, String.format(log, userNo, user.getRole(), sessionId));
             return new LoginResp(user.getRole(), user.getUserName(), sessionId);
         }
         SLogger.error(TAG, "user login FAILED, userNo=" + userNo);
@@ -42,7 +41,6 @@ public class LoginService {
         }
         User user = session.getUser();
         LoginResp resp = new LoginResp();
-        resp.setErrCode(ErrorCode.NORMAL.getCode());
         resp.setRole(user.getRole());
 
         SLogger.info(TAG, "user has logged in, userNo=" + user.getUserNo()

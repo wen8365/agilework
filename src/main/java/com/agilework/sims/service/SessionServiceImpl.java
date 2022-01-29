@@ -32,9 +32,6 @@ public class SessionServiceImpl implements SessionService {
     }
 
     public Session getSession(String sessionId) {
-        if (isSessionInvalid(sessionId)) {
-            return null;
-        }
         return sessionMap.get(sessionId);
     }
 
@@ -71,10 +68,10 @@ public class SessionServiceImpl implements SessionService {
         return true;
     }
 
+    @SuppressWarnings("unused")
     private boolean isSessionInvalid(String sessionId) {
         try {
             UUID uuid = UUID.fromString(sessionId);
-            SLogger.info(TAG, "session id verification passed, id=" + uuid);
         } catch (IllegalArgumentException iae) {
             SLogger.error(TAG, "invalid session, id=" + sessionId);
             return true;
