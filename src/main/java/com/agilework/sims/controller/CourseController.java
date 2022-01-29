@@ -31,18 +31,15 @@ public class CourseController {
     }
     @GetMapping("/queryCourses")
     @ResponseBody
-    public List<Course> queryCourses(String sessionId){
+    public List<Course> queryCourses(@RequestHeader("sessionId") @NonNull String sessionId){
         return courseService.queryCourse(sessionId);
     }
     @GetMapping("findCourse")
     @ResponseBody
-    public Course findCourse(String sessionId,String courseNo){
+    public Course findCourse(@RequestHeader("sessionId") @NonNull String sessionId, String courseNo){
         Session session = sessionService.getSession(sessionId);
         User user=session.getUser();
-        if(session==null){
-            SLogger.info(TAG, "session NOT FOUND, id=" + sessionId);
-            return null;
-        }else if(user.getRole()==0){
+        if(user.getRole()==0){
             SLogger.info(TAG, user.getUserNo()+"start query course with courseNo=" + courseNo);
             return courseService.findCourseByCourseNoAndPublished(courseNo,1);
         }else{

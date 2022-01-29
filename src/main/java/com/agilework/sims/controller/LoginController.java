@@ -9,10 +9,7 @@ import com.agilework.sims.vo.LogoutResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.Normalizer;
 import java.util.regex.Matcher;
@@ -52,14 +49,14 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public LogoutResp logout(String sessionId) {
+    public LogoutResp logout(@RequestHeader("sessionId") @NonNull String sessionId) {
         String id = Normalizer.normalize(sessionId.replaceAll(UNICODE_CHAR, ""), Normalizer.Form.NFKC);
         SLogger.info(TAG, "user logout start, sessionId=" + id);
         return loginService.logout(id);
     }
 
     @GetMapping("/isLogin")
-    public LoginResp isLogin(String sessionId) {
+    public LoginResp isLogin(@RequestHeader("sessionId") @NonNull String sessionId) {
         String id = Normalizer.normalize(sessionId.replaceAll(UNICODE_CHAR, ""), Normalizer.Form.NFKC);
         SLogger.info(TAG, "check login, sessionId=" + id);
         return loginService.isLogin(id);
