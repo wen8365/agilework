@@ -44,35 +44,31 @@ public class AdminController {
         String tPhone = normalize(req.getPhone());
         String tEmail = normalize(req.getEmail());
 
-        SLogger.info(TAG, "admin register start");
+        SLogger.info(TAG, "admin register start, userName=" + tNo);
 
         // verify username
         if (verifier.isUserNameInvalid(tNo)) {
-            SLogger.warn(TAG, REGISTER_USERNAME_FORMAT_ERROR.getReason() + ", userName=" + tNo);
+            SLogger.warn(TAG, REGISTER_USERNAME_FORMAT_ERROR.getReason());
             return new RegisterResp(REGISTER_USERNAME_FORMAT_ERROR);
         }
         // verify teacher name
         if (verifier.isRealNameInvalid(tName)) {
-            SLogger.warn(TAG, REGISTER_REALNAME_FORMAT_ERROR.getReason()
-                    + ", userName=" + tNo + ", realName=" + tName);
+            SLogger.warn(TAG, REGISTER_REALNAME_FORMAT_ERROR.getReason() + ", realName" + tName);
             return new RegisterResp(REGISTER_REALNAME_FORMAT_ERROR);
         }
         // verify password
         if (verifier.isPasswordInvalid(tPasswd)) {
-            SLogger.warn(TAG, REGISTER_PASSWORD_LACK_OF_COMPLEXITY.getReason()
-                    + ", userName=" + tNo + ", passwd=" + tPasswd);
+            SLogger.warn(TAG, REGISTER_PASSWORD_LACK_OF_COMPLEXITY.getReason() + ", passwd=" + tPasswd);
             return new RegisterResp(REGISTER_PASSWORD_LACK_OF_COMPLEXITY);
         }
         // verify phone
         if (verifier.isPhoneInvalid(tPhone)) {
-            SLogger.warn(TAG, REGISTER_PHONE_FORMAT_ERROR.getReason()
-                    + ", userName=" + tNo + ", phone=" + tPhone);
+            SLogger.warn(TAG, REGISTER_PHONE_FORMAT_ERROR.getReason() + ", phone=" + tPhone);
             return new RegisterResp(REGISTER_PHONE_FORMAT_ERROR);
         }
         // verify email
         if (verifier.isEmailInvalid(tEmail )) {
-            SLogger.warn(TAG, REGISTER_EMAIL_FORMAT_ERROR.getReason()
-                    + ", userName=" + tNo + ", email=" + tEmail);
+            SLogger.warn(TAG, REGISTER_EMAIL_FORMAT_ERROR.getReason() + ", email=" + tEmail);
             return new RegisterResp(REGISTER_EMAIL_FORMAT_ERROR);
         }
 

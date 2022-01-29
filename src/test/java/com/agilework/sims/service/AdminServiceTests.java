@@ -64,15 +64,15 @@ public class AdminServiceTests {
         Mockito.when(adminRepository.findByTeacherNoAndStatus(Mockito.anyString(), Mockito.anyInt()))
                 .thenReturn(null);
 
-        AdminInfo adminInfo = adminService.queryAdmin(tNo);
-        Assertions.assertNull(adminInfo);
+        AdminInfo adminInfo1 = adminService.queryAdmin(tNo);
+        Assertions.assertNull(adminInfo1);
 
         Admin admin = new Admin();
         admin.setTeacherNo(tNo);
         Mockito.when(adminRepository.findByTeacherNoAndStatus(Mockito.anyString(), Mockito.anyInt()))
                 .thenReturn(admin);
-        adminInfo = adminService.queryAdmin(tNo);
-        Assertions.assertNotNull(adminInfo);
-        Assertions.assertEquals(adminInfo.getTeacherNo(), tNo);
+        adminInfo1 = adminService.queryAdmin(tNo);
+        Assertions.assertNotNull(adminInfo1);
+        Assertions.assertEquals(adminInfo1.getTeacherNo(), tNo);
     }
 }

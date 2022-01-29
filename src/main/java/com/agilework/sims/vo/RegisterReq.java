@@ -16,5 +16,7 @@ public class RegisterReq {
     @NonNull
     private String email;
 
-    public RegisterReq() {}
+    public RegisterReq() {
+        // Nothing need to do
+    }
 }
