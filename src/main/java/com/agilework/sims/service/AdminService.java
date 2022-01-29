@@ -47,6 +47,7 @@ public class AdminService {
         Admin admin =  adminRepository.findByTeacherNoAndStatus(tNo, normalStatus);
         if (admin != null) {
             SLogger.info(TAG, "query SUCCESS, teacherNo= " + admin.getTeacherNo());
+            admin.setPassword(""); // don't return password
             return new AdminInfo(admin);
         }
         SLogger.error(TAG, "query FAILED, admin NOT FOUND!");
