@@ -1,6 +1,7 @@
 package com.agilework.sims.dto;
 
 import com.agilework.sims.entity.Admin;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,6 +9,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class AdminInfo extends AdminSummary{
     private String teacherName;
+    @JsonIgnore
     private String password;
     private String phone;
 
@@ -16,7 +18,6 @@ public class AdminInfo extends AdminSummary{
     public AdminInfo(Admin admin) {
         this.setTeacherNo(admin.getTeacherNo());
         this.teacherName = admin.getTeacherName();
-        this.password = admin.getPassword();
         this.phone = admin.getPhone();
         this.setEmail(admin.getEmail());
     }

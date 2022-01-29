@@ -1,7 +1,6 @@
 package com.agilework.sims.controller;
 
 import com.agilework.sims.service.LoginService;
-import com.agilework.sims.util.ErrorCode;
 import com.agilework.sims.util.SLogger;
 import com.agilework.sims.util.UserVerifier;
 import com.agilework.sims.vo.LoginReq;
@@ -12,6 +11,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.Normalizer;
+
+import static com.agilework.sims.util.ErrorCode.LOGIN_USERNAME_INVALID;
+import static com.agilework.sims.util.ErrorCode.LOGIN_USERNAME_PASSWORD_ERROR;
 
 @RestController
 public class LoginController {
@@ -35,13 +37,13 @@ public class LoginController {
 
         // verify username
         if (verifier.isUserNameInvalid(uName)) {
-            SLogger.warn(TAG, "invalid user attempt login, userName=" + uName);
-            return LoginResp.failureResp(ErrorCode.LOGIN_USERNAME_INVALID);
+            SLogger.warn(TAG, LOGIN_USERNAME_INVALID.getReason());
+            return LoginResp.failureResp(LOGIN_USERNAME_INVALID);
         }
         // verify password
         if (verifier.isPasswordInvalid(passwd)) {
-            SLogger.warn(TAG, "user attempt login with invalid password, userName=" + uName + ", passwd=" + passwd);
-            return LoginResp.failureResp(ErrorCode.LOGIN_USERNAME_PASSWORD_ERROR);
+            SLogger.warn(TAG, LOGIN_USERNAME_PASSWORD_ERROR.getReason() + ", passwd=" + passwd);
+            return LoginResp.failureResp(LOGIN_USERNAME_PASSWORD_ERROR);
         }
         return loginService.login(uName, passwd);
     }
