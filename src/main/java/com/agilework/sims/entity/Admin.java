@@ -1,13 +1,15 @@
 package com.agilework.sims.entity;
 
 import com.agilework.sims.dto.AdminInfo;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "t_admin")
-@Data
+@Getter
+@Setter
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
