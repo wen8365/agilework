@@ -1,9 +1,11 @@
 package com.agilework.sims.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 @Data
+@NoArgsConstructor
 public class RegisterReq {
     @NonNull
     private String teacherNo;
@@ -15,8 +17,4 @@ public class RegisterReq {
     private String phone;
     @NonNull
     private String email;
-
-    public RegisterReq() {
-        // Nothing need to do
-    }
 }
