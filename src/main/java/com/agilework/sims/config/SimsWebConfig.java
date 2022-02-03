@@ -16,6 +16,6 @@ public class SimsWebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(newLoginInterceptor())
-                .excludePathPatterns("/login", "/adminRegister", "/error", "*.css", "*.js");
+                .excludePathPatterns("/login", "/adminRegister", "/error", "/css/*.css", "/js/*.js", "/*.html");
     }
 }
