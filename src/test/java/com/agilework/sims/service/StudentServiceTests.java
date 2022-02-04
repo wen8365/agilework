@@ -34,8 +34,8 @@ public class StudentServiceTests {
     private StudentVRepository studentVRepository;
 
     private List<StudentInfo> studentInfoList;
-    private static final int normalStatus = 0;
-    private static final int delStatus = 2;
+    private static final int NORMAL_STATUS = 0;
+    private static final int DEL_STATUS = 2;
 
     @Before
     public void init() {
@@ -71,8 +71,8 @@ public class StudentServiceTests {
         studentInfoList.add(si2);
         studentInfoList.add(si3);
 
-        ReflectionTestUtils.setField(studentService, "normalStatus", normalStatus);
-        ReflectionTestUtils.setField(studentService, "delStatus", delStatus);
+        ReflectionTestUtils.setField(studentService, "normalStatus", NORMAL_STATUS);
+        ReflectionTestUtils.setField(studentService, "delStatus", DEL_STATUS);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class StudentServiceTests {
     @Test
     public void testUpdateStudents() {
         Mockito.when(studentRepository.updateByStudentNoAndStatus(
-                Mockito.any(Student.class), Mockito.eq(normalStatus))).thenReturn(1);
+                Mockito.any(Student.class), Mockito.eq(NORMAL_STATUS))).thenReturn(1);
         Tuple<ErrorCode, Integer> result = studentService.updateStudents(studentInfoList);
         Assertions.assertEquals(result.getFirst(), ErrorCode.NORMAL);
         Assertions.assertEquals(result.getSecond(), studentInfoList.size());
@@ -114,7 +114,7 @@ public class StudentServiceTests {
         studentNoList.add("S0022320007");
 
         Mockito.when(studentRepository.updateStudentStatus(
-                Mockito.anyString(), Mockito.eq(delStatus))).thenReturn(1);
+                Mockito.anyString(), Mockito.eq(DEL_STATUS))).thenReturn(1);
         Tuple<ErrorCode, Integer> result = studentService.removeStudents(studentNoList);
         Assertions.assertEquals(result.getFirst(), ErrorCode.NORMAL);
         Assertions.assertEquals(result.getSecond(), studentInfoList.size());

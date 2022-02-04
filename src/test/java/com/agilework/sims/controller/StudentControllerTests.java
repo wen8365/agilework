@@ -33,8 +33,8 @@ public class StudentControllerTests {
     private UserVerifier verifier;
     @Mock
     private SessionService sessionService;
-    private static final int roleTeacher = 1;
-    private static final int roleStudent = 0;
+    private static final int ROLE_TEACHER = 1;
+    private static final int ROLE_STUDENT = 0;
 
     private static final String SESSION_ID_1 = "717e0a1a-12f7-494f-9a31-82abe82dfe0c";
     private static final String SESSION_ID_2 = "57c7395e-34c6-45ed-af18-0c8cb31874bb";
@@ -61,19 +61,19 @@ public class StudentControllerTests {
         importReq.setStudents(studentInfoList);
 
         User user1 = new User();
-        user1.setRole(roleStudent);
+        user1.setRole(ROLE_STUDENT);
         user1.setUserNo(STUDENT_NO);
         Session session1 = new Session(SESSION_ID_1, user1);
         Mockito.when(sessionService.getSession(SESSION_ID_1)).thenReturn(session1);
 
         User user2 = new User();
-        user2.setRole(roleTeacher);
+        user2.setRole(ROLE_TEACHER);
         user2.setUserNo(TEACHER_NO);
         Session session2 = new Session(SESSION_ID_2, user2);
         Mockito.when(sessionService.getSession(SESSION_ID_2)).thenReturn(session2);
 
-        ReflectionTestUtils.setField(controller, "roleTeacher", roleTeacher);
-        ReflectionTestUtils.setField(controller, "roleStudent", roleStudent);
+        ReflectionTestUtils.setField(controller, "roleTeacher", ROLE_TEACHER);
+        ReflectionTestUtils.setField(controller, "roleStudent", ROLE_STUDENT);
     }
 
     @Test

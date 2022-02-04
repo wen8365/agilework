@@ -45,6 +45,8 @@ public class StudentController {
     @Value("${role.student}")
     private int roleStudent;
 
+    private static final String LIST_LOG = "total=%s, invalid=%s";
+
     @PostMapping("/studentsImport")
     public StudentsImportResp studentsImport(@RequestHeader("sessionId") String sessionId,
                                              @RequestBody @NonNull StudentsImportReq req) {
@@ -60,7 +62,7 @@ public class StudentController {
         List<StudentInfo> invalids = new ArrayList<>();
         filterInvalidStudents(students, invalids, this::isStudentInvalid);
 
-        SLogger.info(TAG, "total=" + students.size() + " ,invalid=" + invalids.size());
+        SLogger.info(TAG, String.format(LIST_LOG, students.size(), invalids.size()));
         Tuple<ErrorCode, String> tuple = studentService.importStudents(students);
         ErrorCode errorCode = tuple.getFirst();
         String duplicateNo = tuple.getSecond();
@@ -178,7 +180,7 @@ public class StudentController {
         List<StudentInfo> invalids = new ArrayList<>();
         filterInvalidStudents(students, invalids, this::isStudentInvalid2);
 
-        SLogger.info(TAG, "total=" + students.size() + " ,invalid=" + invalids.size());
+        SLogger.info(TAG, String.format(LIST_LOG, students.size(), invalids.size()));
         Tuple<ErrorCode, Integer> tuple = studentService.updateStudents(students);
         ErrorCode errorCode = tuple.getFirst();
         int rows = tuple.getSecond();
@@ -205,7 +207,7 @@ public class StudentController {
         int total = students.size();
         students.removeIf(s -> verifier.isUserNameInvalid(s));
 
-        SLogger.info(TAG, "total=" + total + " ,invalid=" + (total - students.size()));
+        SLogger.info(TAG, String.format(LIST_LOG, total, (total - students.size())));
         Tuple<ErrorCode, Integer> tuple = studentService.removeStudents(students);
         ErrorCode errorCode = tuple.getFirst();
         int rows = tuple.getSecond();
