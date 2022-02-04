@@ -6,3 +6,7 @@ function checkAll() {
 		checkboxs[i].checked=checked;
 	}
 }
+// 判断是否登录
+if(!sessionStorage.getItem("sessionId")) {
+	parent.location.href="login.html"
+}
