@@ -20,7 +20,7 @@ public class AdminService {
     @Autowired
     private AuthService authService;
 
-    @Value("${user-status.normal}")
+    @Value("${user.status.normal}")
     private int normalStatus;
 
     public ErrorCode registerAdmin(AdminInfo adminInfo) {
@@ -43,11 +43,20 @@ public class AdminService {
         return ErrorCode.NORMAL;
     }
 
+    private AdminInfo convertToAdminInfo(Admin admin) {
+        AdminInfo adminInfo = new AdminInfo();
+        adminInfo.setTeacherNo(admin.getTeacherNo());
+        adminInfo.setTeacherName(admin.getTeacherName());
+        adminInfo.setPhone(admin.getPhone());
+        adminInfo.setEmail(admin.getEmail());
+        return adminInfo;
+    }
+
     public AdminInfo queryAdmin(String tNo) {
         Admin admin =  adminRepository.findByTeacherNoAndStatus(tNo, normalStatus);
         if (admin != null) {
             SLogger.info(TAG, "query SUCCESS, teacherNo= " + admin.getTeacherNo());
-            return new AdminInfo(admin);
+            return convertToAdminInfo(admin);
         }
         SLogger.error(TAG, "query FAILED, admin NOT FOUND!");
         return null;

@@ -15,8 +15,15 @@ public enum ErrorCode {
     REGISTER_EMAIL_FORMAT_ERROR(1205, "email format error"),
     REGISTER_USER_ALREADY_EXISTS(1206, "user already exists"),
     REGISTER_USER_IS_NOT_TEACHER(1207, "user isn't a teacher"),
-    ADMIN_QUERY_PERMISSION_DENIED(1208, "user permission denied"),
+    ADMIN_QUERY_PERMISSION_DENIED(1208, "admin query permission denied"),
     ADMIN_QUERY_NOT_EXISTS(1209, "admin not exists"),
+    STUDENT_IMPORT_PERMISSION_DENIED(1301, "student import permission denied"),
+    STUDENT_IMPORT_USER_ALREADY_EXISTS(1302, "student already exists"),
+    STUDENT_QUERY_PERMISSION_DENIED(1303, "student query permission denied"),
+    STUDENT_QUERY_NOT_EXISTS(1304, "student not exists"),
+    STUDENT_UPDATE_PERMISSION_DENIED(1305, "student update permission denied"),
+    STUDENT_UPDATE_INFO_INVALID(1306, "student information invalid"),
+    STUDENT_REMOVE_PERMISSION_DENIED(1307, "student remove permission denied"),
     UNKNOWN(1999, "unknown error");
 
     @Getter

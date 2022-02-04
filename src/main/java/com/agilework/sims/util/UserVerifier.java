@@ -10,20 +10,26 @@ import java.util.regex.Pattern;
 @Component
 public class UserVerifier {
 
-    @Value("${login.pattern.username}")
+    @Value("${user.pattern.username}")
     private String uPattern;
 
-    @Value("${login.pattern.realname}")
+    @Value("${user.pattern.realname}")
     private String rPattern;
 
-    @Value("${login.pattern.password}")
+    @Value("${user.pattern.password}")
     private String pPattern;
 
-    @Value("${login.pattern.phone}")
+    @Value("${user.pattern.phone}")
     private String phonePattern;
 
-    @Value("${login.pattern.email}")
+    @Value("${user.pattern.email}")
     private String emailPattern;
+
+    @Value("${user.pattern.sex}")
+    private String sexPattern;
+
+    @Value("${user.pattern.major}")
+    private String majorPattern;
 
     public boolean isUserNameInvalid(String userName) {
         return isInvalid(userName, uPattern);
@@ -49,6 +55,13 @@ public class UserVerifier {
         String hostname = email.substring(at).toLowerCase(Locale.US);
         String email1 = pre + hostname;
         return isInvalid(email1, emailPattern);
+    }
+
+    public boolean isSexInvalid(String sex) {
+        return isInvalid(sex, sexPattern);
+    }
+    public boolean isMajorInvalid(String sex) {
+        return isInvalid(sex, majorPattern);
     }
 
     private boolean isInvalid(String str, String pattern) {

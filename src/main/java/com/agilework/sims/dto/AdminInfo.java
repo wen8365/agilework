@@ -1,25 +1,19 @@
 package com.agilework.sims.dto;
 
-import com.agilework.sims.entity.Admin;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AdminInfo extends AdminSummary{
+public class AdminInfo extends AdminSummary {
     private String teacherName;
     @JsonIgnore
     private String password;
     private String phone;
 
-    public AdminInfo() {}
-
-    public AdminInfo(Admin admin) {
-        this.setTeacherNo(admin.getTeacherNo());
-        this.teacherName = admin.getTeacherName();
-        this.phone = admin.getPhone();
-        this.setEmail(admin.getEmail());
+    public AdminInfo() {
+        super();
     }
 
     @Override
