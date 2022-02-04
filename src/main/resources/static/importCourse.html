@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>导入课程</title>
+		<style>
+			td {
+				width: 10%;
+			}
+		</style>
+		<!-- common -->
+		<link rel="stylesheet" href="css/common.css" />
+		<script type="text/javascript" src="js/common.js" ></script>
+		<!-- Vue -->
+		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<!--Font Awesome-->
+    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+	</head>
+	<body>
+		<div id="app">
+			<div class="subPageBox">
+				<div class="importBtn">
+					<i class="fa fa-reply" v-on:click="toCourseManagement()"></i>
+					<input type="button" class="btn" value="确认导入" v-on:click="importCourse()" />
+				</div>
+				<table class="table importTable">
+					<thead>
+						<tr>
+							<td>序号</td>
+							<td v-for="i in tableNames.length">
+								{{tableNames[i-1]}}
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="10" class="line">
+								<hr />
+							</td>
+						</tr>
+						<tr v-for="i in courses.length">
+							<td>{{i}}</td>
+							<td>
+								<input type="text" v-model="courses[i-1].courseNo" />
+							</td>
+							<td>
+								<input type="text" v-model="courses[i-1].courseCode" />
+							</td>
+							<td>
+								<input type="text" v-model="courses[i-1].courseName" />
+							</td>
+							<td>
+								<input type="text" v-model="courses[i-1].major" />
+							</td>
+							<td>
+								<input type="radio" v-bind:checked="courses[i-1].published" v-on:click="changeRadio(i-1)"/>
+							</td>
+							<td>
+								<input type="date" v-model="courses[i-1].examTime" />
+							</td>
+							<td>
+								<input type="number" min="0" v-model="courses[i-1].examDuration" />
+							</td>
+							<td>
+								<input type="text" v-model="courses[i-1].examAddr" />
+							</td>
+							<td>
+								<i class="fa fa-trash-o" v-on:click="minus(i-1)"></i>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="10" class="plus">
+								<i class="fa fa-plus-circle" v-on:click="plus()"></i>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					tableNames: ["课程编号", "课程代码", "课程名", "所属专业", "发布状态", "考试日期", "考试时长（小时）", "考试地点", "操作"],
+					courses: [{
+						courseNo: "",
+						courseCode: "",
+						courseName: "",
+						major: "",
+						published: false,
+						examTime: "",
+						examDuration: "",
+						examAddr: ""
+					}],
+					urls: [
+						''
+					]
+				},
+				methods: {
+					toCourseManagement: function() {
+						location.href="courseManagement.html";
+					},
+					importCourse: function() {
+						var jsonData=this.courses;
+		                //发送 post请求
+		                this.$http.post(this.urls[0], JSON.stringify(jsonData), {
+		                	emulateJSON: true
+		                }).then(function(res){
+		                	if(res.body.length==0) {
+		                		alert("导入课程成功！");
+		                	} else {
+		                		alert("第"+res.body+"行错误！");
+		                	}
+		                },function(res){
+		                    console.log(res);
+		                });
+					},
+					changeRadio: function(n) {
+						this.$set(this.courses[n], "published", !this.courses[n].published);
+					},
+					plus: function() {
+						this.courses.push({
+							courseNo: "",
+							courseCode: "",
+							courseName: "",
+							major: "",
+							published: false,
+							examTime: "",
+							examDuration: "",
+							examAddr: ""
+						});
+					},
+					minus: function(n) {
+						this.courses.splice(n, 1);
+					}
+				},
+				mounted() {
+					parent.homePage.innerText="导入课程";
+				}
+			});
+		</script>
+	</body>
+</html>
