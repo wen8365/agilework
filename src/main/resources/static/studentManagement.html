@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 	<head>
 		<meta charset="UTF-8">
 		<title>SIMS学生列表</title>
 		<style>
 			.operator {
-				margin-left: 4%;
+				margin-left: 3.4%;
 			}
 			td {
-				width: 16%;
-				border: 1px darkgrey solid;
-				padding: 10px;
+				width: 13.8%;
 			}
 			.checkboxTd {
-				width: 4%;
-				border: 0px;
+				width: 3.4%;
 			}
 		</style>
 		<!-- common -->
@@ -24,21 +21,44 @@
 		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
 		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
 		<!--Font Awesome-->
-    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+    		<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
 	</head>
 	<body>
 		<div id="app">
 			<div class="subPageBox">
-				<input type="button" class="btn" value="导入学生" /><br /><br />
+				<input type="button" class="btn" value="导入学生" v-on:click="importStudent()" />
+				<input type="button" class="btn" value="批量删除" v-on:click="batchDelete()" />
+				<br /><br />
 				<div class="operator">
-					<select class="select" v-model="condition">
-						<option value="筛选">筛选</option>
-						<option value="1">1</option>
-						<option value="2">2</option>					
-						<option value="3">3</option>
+					<select class="select" v-model="condition.sex">
+						<option value="全选">性别</option>
+						<option v-for="i in conditions.sexes.length" v-bind:value="conditions.sexes[i-1]">
+							{{conditions.sexes[i-1]}}
+						</option>
 					</select>
 					<i class="fa fa-filter"></i>
-					<input type="text" class="search" v-model="searchText" placeholder="搜索···" />
+					<select class="select" v-model="condition.major">
+						<option value="全选">专业</option>
+						<option v-for="i in conditions.majors.length" v-bind:value="conditions.majors[i-1]">
+							{{conditions.majors[i-1]}}
+						</option>
+					</select>
+					<i class="fa fa-filter"></i>
+					<select class="select" v-model="condition.grade">
+						<option value="全选">年级</option>
+						<option v-for="i in conditions.grades.length" v-bind:value="conditions.grades[i-1]">
+							{{conditions.grades[i-1]}}级
+						</option>
+					</select>
+					<i class="fa fa-filter"></i>
+					<select class="select" v-model="condition.class">
+						<option value="全选">班级</option>
+						<option v-for="i in conditions.classes.length" v-bind:value="conditions.classes[i-1]">
+							{{conditions.classes[i-1]}}班
+						</option>
+					</select>
+					<i class="fa fa-filter"></i>
+					<input type="text" class="search" v-model="searchText" placeholder="学号、姓名" />
 					<i class="fa fa-search" v-on:click="doSearch(1)"></i>
 				</div>
 				<table class="table">
@@ -55,7 +75,7 @@
 					<tbody>
 						<tr>
 							<td class="checkboxTd"></td>
-							<td colspan="6" class="line">
+							<td colspan="7" class="line">
 								<hr />
 							</td>
 						</tr>
@@ -64,7 +84,9 @@
 								<input type="checkbox" name="checkbox" />
 							</td>
 							<td>
-								{{page.content[i-1].studentNo}}
+								<a href="" v-on:click.prevent="seeStudent(page.content[i-1].studentNo)">
+									{{page.content[i-1].studentNo}}
+								</a>
 							</td>
 							<td>
 								{{page.content[i-1].studentName}}
@@ -76,10 +98,14 @@
 								{{page.content[i-1].major}}
 							</td>
 							<td>
-								{{page.content[i-1].grade}}
+								{{page.content[i-1].grade}}级
 							</td>
 							<td>
-								{{page.content[i-1].class}}
+								{{page.content[i-1].class}}班
+							</td>
+							<td>
+								<i class="fa fa-edit"></i>
+								<i class="fa fa-trash-o"></i>
 							</td>
 						</tr>
 					</tbody>
@@ -103,9 +129,20 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					tableNames: ["学号", "姓名", "性别", "专业", "年级", "班级"],
-					condition: "筛选",
+					tableNames: ["学号", "姓名", "性别", "专业", "年级", "班级", "操作"],
+					condition: {
+						sex: "全选",
+						major: "全选",
+						grade: "全选",
+						class: "全选"
+					},
 					searchText: "",
+					conditions: {
+						sexes: ["男", "女"],
+						majors: ["软件工程", "计算机科学", "大数据"],
+						grades: [2019, 2020, 2021],
+						classes: [1, 2, 3]
+					},
 					page: {
 		        		number: 1,
 		        		size: 6,
@@ -117,8 +154,8 @@
 								studentName: "张三",
 								sex: "男",
 								major: "软件工程",
-								grade: "2021级",
-								class: "1班",
+								grade: "2021",
+								class: "1",
 								status: 0
 							},
 							{
@@ -127,8 +164,8 @@
 								studentName: "张三",
 								sex: "男",
 								major: "软件工程",
-								grade: "2021级",
-								class: "1班",
+								grade: "2021",
+								class: "1",
 								status: 0
 							},
 							{
@@ -137,8 +174,8 @@
 								studentName: "张三",
 								sex: "男",
 								major: "软件工程",
-								grade: "2021级",
-								class: "1班",
+								grade: "2021",
+								class: "1",
 								status: 0
 							},
 							{
@@ -147,8 +184,8 @@
 								studentName: "张三",
 								sex: "男",
 								major: "软件工程",
-								grade: "2021级",
-								class: "1班",
+								grade: "2021",
+								class: "1",
 								status: 0
 							},
 							{
@@ -157,8 +194,8 @@
 								studentName: "张三",
 								sex: "男",
 								major: "软件工程",
-								grade: "2021级",
-								class: "1班",
+								grade: "2021",
+								class: "1",
 								status: 0
 							},
 							{
@@ -167,10 +204,10 @@
 								studentName: "张三",
 								sex: "男",
 								major: "软件工程",
-								grade: "2021级",
-								class: "1班",
+								grade: "2021",
+								class: "1",
 								status: 0
-							}
+							},
 		        		]
 		        	},
 					urls: [
@@ -180,8 +217,12 @@
 				methods: {
 					doSearch: function(number) {
 						var jsonData={
+							sex: this.condition.sex!="全选"?this.condition.sex:null,
+							major: this.condition.major!="全选"?this.condition.major:null,
+							grade: this.condition.grade!="全选"?this.condition.grade:null,
+							class: this.condition.class!="全选"?this.condition.class:null,
 							searchText: this.searchText,
-							number: this.page.number,
+							number: number,
 		        			size: this.page.size
 						};
 		                //发送 post请求
@@ -193,9 +234,31 @@
 		                    console.log(res);
 		                });
 					},
+					conditionSelect: function() {
+						var jsonData={};
+		                //发送 post请求
+		                this.$http.post(this.urls[1], jsonData, {
+		                	emulateJSON: true
+		                }).then(function(res){
+		                	this.conditions=res.body;
+		                },function(res){
+		                    console.log(res);
+		                });
+					},
+					importStudent: function() {
+						location.href="importStudent.html";
+					},
+					batchDelete: function() {
+						
+					},
+					seeStudent: function(studentNo) {
+						sessionStorage.setItem("studentNo", studentNo);
+						location.href="studentDetail.html";
+					}
 				},
 				mounted() {
 					parent.homePage.innerText="SIMS学生列表";
+					this.conditionSelect();
 					this.doSearch(1);
 				}
 			});
