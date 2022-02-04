@@ -2,16 +2,17 @@
 <html lang="zh">
 	<head>
 		<meta charset="UTF-8">
-		<title>SIMS注册页</title>
+		<title>SIMS登录页</title>
 		<style>
 			.box {
 				display: inline-block;
-				width: 32%;
+				width: 25%;
 				height: 65%;
 				text-align: center;
 			}
 			td {
 				padding: 5px;
+				text-align: center;
 			}
 			input {
 				width: 300px;
@@ -27,6 +28,15 @@
 			}
 			input[type="button"]:hover {
 				background-color: dodgerblue;
+				cursor: pointer;
+			}
+			h1 {
+				font-size: 36px;
+			}
+			.twoLine hr {
+				display: inline-block;
+				width: 119px;
+				margin-bottom: 3px
 			}
 		</style>
 		<!-- common.css -->
@@ -44,49 +54,32 @@
 			<table class="center box">	
 				<tbody>
 					<tr>
-						<td></td>
 						<td>
-							<h2>学生注册</h2>
+							<h1>Welcome to SIMS</h1>
+							<br/>
 						</td>
 					</tr>
 					<tr>
-						<td class="right">学生号</td>
 						<td>
-							<input type="text" v-model="teacherNo" />
+							<input type="text" v-model="userName" placeholder="教工号/学号" />
 						</td>
 					</tr>
 					<tr>
-						<td class="right">姓名</td>
 						<td>
-							<input type="text" v-model="teacherName" />
+							<input type="password" v-model="password" placeholder="密码" />
 						</td>
 					</tr>
 					<tr>
-						<td class="right">手机</td>
 						<td>
-							<input type="text" v-model="phone" />
+							<input type="button" value="登录" v-on:click="doLogin()" />
 						</td>
 					</tr>
 					<tr>
-						<td class="right">邮箱</td>
-						<td>
-							<input type="text" v-model="email" />
+						<td class="twoLine">
+							<hr/><span>教职工注册</span><hr/>
 						</td>
 					</tr>
 					<tr>
-						<td class="right">密码</td>
-						<td>
-							<input type="password" v-model="passoword" />
-						</td>
-					</tr>
-					<tr>
-						<td class="right">确认密码</td>
-						<td>
-							<input type="password" v-model="confirmPassword" />
-						</td>
-					</tr>
-					<tr>
-						<td></td>
 						<td>
 							<input type="button" value="注册" v-on:click="doRegister()" />
 						</td>
@@ -98,72 +91,66 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					teacherNo: '',
-					teacherName: '',
-					phone: '',
-					email: '',
-					passoword: '',
-					confirmPassword: '',
+					userName: '',
+					password: '',
 					urls: [
-						''
+						'login'
 					]
 				},
 				methods: {
 					doCheck: function() {
-						if(this.teacherNo=='') {
-							alert("学生号不能为空！");
+						if(this.userName=='') {
+							alert("教工号/学号不能为空！");
 							return false;
 						}
-						if(this.teacherName=='') {
-							alert("姓名不能为空！");
-							return false;
-						}
-						if(this.phone=='') {
-							alert("手机不能为空！");
-							return false;
-						}
-						if(this.email=='') {
-							alert("邮箱不能为空！");
-							return false;
-						}
-						if(this.passoword=='') {
+						if(this.password=='') {
 							alert("密码不能为空！");
-							return false;
-						}
-						if(this.confirmPassword=='') {
-							alert("确认密码不能为空！");
-							return false;
-						}
-						if(this.passoword!=this.confirmPassword) {
-							alert("密码和确认密码不一致！");
 							return false;
 						}
 						
 						return true;
 					},
-					doRegister: function() {
+					doLogin: function() {
 						if(this.doCheck()) {
 							var jsonData={
-								teacherNo: '',
-								teacherName: '',
-								phone: '',
-								email: '',
-								passoword: '',
+								userName: this.userName,
+								password: this.password
 							};
 							console.log(jsonData);
 			                //发送 post请求
-			                this.$http.post(this.urls[0], jsonData, {
+			                this.$http.post(this.urls[0], JSON.stringify(jsonData), {
 			                	emulateJSON: true
 			                }).then(function(res){
-			                   	if(res.body==1) {
-			                   		alert("注册成功！");
-			                   	} else {
-			                   		alert("注册失败！");
-			                   	}
+			                	var loginResp=res.body;
+			                	switch(loginResp.errCode) {
+			                	case 0:
+			                		if(loginResp.role==-1) {
+			                			alert("登录用户的身份是无效身份！");
+			                		} else {
+			                			sessionStorage.setItem("sessionId", loginResp.sessionId);
+			                			sessionStorage.setItem("role", loginResp.role);
+			                			location.href="homePage.html";
+			                		}
+			                		break;
+			                	case 1101:
+			                		alert("用户未登录！");
+			                		break;
+			                	case 1102:
+			                		alert("用户名无效（用户名包含非法字符）！");
+			                		break;
+			                	case 1103:
+			                		alert("用户名或密码错误！");
+			                		break;
+			                	default: 
+			                		alert("登录失败！");
+			                	}
 			                },function(res){
 			                    console.log(res);
 			                });
 						}
+					},
+					doRegister: function() {
+						location.href="register.html";
 					}
 				}
 			});

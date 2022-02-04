@@ -28,6 +28,16 @@
 			input[type="button"]:hover {
 				background-color: dodgerblue;
 			}
+			.tip {
+				position: absolute;
+				display: inline-block;
+				z-index: 100;
+				width: 200px;
+				padding-left: 10px;
+				text-align: left;
+				color: red;
+				font-size: 10px;
+			}
 		</style>
 		<!-- common.css -->
 		<link rel="stylesheet" href="css/common.css" />
@@ -52,31 +62,36 @@
 					<tr>
 						<td class="right">教工号</td>
 						<td>
-							<input type="text" v-model="teacherNo" />
+							<input type="text" v-model="teacherNo" v-on:focus="tipIndex=0" />
+							<span class="tip">{{tipIndex==0?tips[0]:null}}</span>
 						</td>
 					</tr>
 					<tr>
 						<td class="right">姓名</td>
 						<td>
-							<input type="text" v-model="teacherName" />
+							<input type="text" v-model="teacherName" v-on:focus="tipIndex=1" />
+							<span class="tip">{{tipIndex==1?tips[1]:null}}</span>
 						</td>
 					</tr>
 					<tr>
 						<td class="right">手机</td>
 						<td>
-							<input type="text" v-model="phone" />
+							<input type="text" v-model="phone" v-on:focus="tipIndex=2" />
+							<span class="tip">{{tipIndex==2?tips[2]:null}}</span>
 						</td>
 					</tr>
 					<tr>
 						<td class="right">邮箱</td>
 						<td>
-							<input type="text" v-model="email" />
+							<input type="text" v-model="email" v-on:focus="tipIndex=3" />
+							<span class="tip">{{tipIndex==3?tips[3]:null}}</span>
 						</td>
 					</tr>
 					<tr>
 						<td class="right">密码</td>
 						<td>
-							<input type="password" v-model="passoword" />
+							<input type="password" v-model="password" v-on:focus="tipIndex=4" />
+							<span class="tip">{{tipIndex==4?tips[4]:null}}</span>
 						</td>
 					</tr>
 					<tr>
@@ -102,10 +117,18 @@
 					teacherName: '',
 					phone: '',
 					email: '',
-					passoword: '',
+					password: '',
 					confirmPassword: '',
+					tips: [
+						"“T00”开头，8~16位，只能允许大写字母，小写字母和数字",
+						"大写字母，小写字母，中文和小数点（.），最长32位",
+						"国内手机号格式，首位为1，不能以10、11或12开头，11位",
+						"6~32位前缀，允许大写字母，小写字母，数字，减号（-）和下划线（_），后缀为“@sims.edu.cn”",
+						"必须包含大写字母，小写字母，数字和特殊字符（.~!@#$%^&*()\-_+=），8~16位"
+					],
+					tipIndex: -1,
 					urls: [
-						''
+						'adminRegister'
 					]
 				},
 				methods: {
@@ -126,7 +149,7 @@
 							alert("邮箱不能为空！");
 							return false;
 						}
-						if(this.passoword=='') {
+						if(this.password=='') {
 							alert("密码不能为空！");
 							return false;
 						}
@@ -134,7 +157,7 @@
 							alert("确认密码不能为空！");
 							return false;
 						}
-						if(this.passoword!=this.confirmPassword) {
+						if(this.password!=this.confirmPassword) {
 							alert("密码和确认密码不一致！");
 							return false;
 						}
@@ -142,24 +165,51 @@
 						return true;
 					},
 					doRegister: function() {
+						this.tipIndex=-1;
 						if(this.doCheck()) {
 							var jsonData={
-								teacherNo: '',
-								teacherName: '',
-								phone: '',
-								email: '',
-								passoword: '',
+								teacherNo: this.teacherNo,
+								teacherName: this.teacherName,
+								phone: this.phone,
+								email: this.email,
+								password: this.password
 							};
 							console.log(jsonData);
 			                //发送 post请求
-			                this.$http.post(this.urls[0], jsonData, {
+			                this.$http.post(this.urls[0], JSON.stringify(jsonData), {
 			                	emulateJSON: true
 			                }).then(function(res){
-			                   	if(res.body==1) {
-			                   		alert("注册成功！");
-			                   	} else {
-			                   		alert("注册失败！");
-			                   	}
+			                	var errCode=res.body.errCode;
+			                	switch(errCode) {
+			                	case 0:
+			                		alert("注册成功！");
+			                		location.href="login.html"
+			                		break;
+			                	case 1201:
+			                		alert("教工号格式错误！");
+			                		break;
+			                	case 1202:
+			                		alert("真实姓名格式错误！");
+			                		break;
+			                	case 1203:
+			                		alert("密码复杂度不够！");
+			                		break;
+			                	case 1204:
+			                		alert("手机号格式错误！");
+			                		break;
+			                	case 1205:
+			                		alert("邮箱格式错误！");
+			                		break;
+			                	case 1206:
+			                		alert("用户已存在！");
+			                		break;
+			                	case 1207:
+			                		alert("检测到该账户非教师账号！");
+			                		break;
+								default:
+									alert("注册失败！");
+									break;
+			                	}
 			                },function(res){
 			                    console.log(res);
 			                });
