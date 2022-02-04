@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>导入学生</title>
+		<style>
+			td {
+				width: 12.5%;
+			}
+		</style>
+		<!-- common -->
+		<link rel="stylesheet" href="css/common.css" />
+		<script type="text/javascript" src="js/common.js" ></script>
+		<!-- Vue -->
+		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<!--Font Awesome-->
+    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+	</head>
+	<body>
+		<div id="app">
+			<div class="subPageBox">
+				<div class="importBtn">
+					<i class="fa fa-reply" v-on:click="toStudentManagement()"></i>
+					<input type="button" class="btn" value="确认导入" v-on:click="importStudent()" />
+				</div>
+				<table class="table importTable">
+					<thead>
+						<tr>
+							<td>序号</td>
+							<td v-for="i in tableNames.length">
+								{{tableNames[i-1]}}
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="8" class="line">
+								<hr />
+							</td>
+						</tr>
+						<tr v-for="i in students.length">
+							<td>{{i}}</td>
+							<td>
+								<input type="text" v-model="students[i-1].studentNo" />
+							</td>
+							<td>
+								<input type="text" v-model="students[i-1].studentName" />
+							</td>
+							<td>
+								<select class="select" v-model="students[i-1].sex">
+									<option value="男">男</option>
+									<option value="女">女</option>
+								</select>
+							</td>
+							<td>
+								<input type="text" v-model="students[i-1].major" />
+							</td>
+							<td>
+								<input type="number" v-model="students[i-1].grade" placeholder="级" />
+							</td>
+							<td>
+								<input type="number" v-model="students[i-1].class" placeholder="班" />
+							</td>
+							<td>
+								<i class="fa fa-trash-o" v-on:click="minus(i-1)"></i>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="8" class="plus">
+								<i class="fa fa-plus-circle" v-on:click="plus()"></i>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					tableNames: ["学号", "姓名", "性别", "专业", "年级", "班级", "操作"],
+					students: [{
+						studentNo: "",
+						studentName: "",
+						sex: "男",
+						major: "",
+						grade: "",
+						class: ""	
+					}],
+					urls: [
+						''
+					]
+				},
+				methods: {
+					toStudentManagement: function() {
+						location.href="studentManagement.html";
+					},
+					importStudent: function() {
+						var jsonData=this.students;
+		                //发送 post请求
+		                this.$http.post(this.urls[0], JSON.stringify(jsonData), {
+		                	emulateJSON: true
+		                }).then(function(res){
+		                	if(res.body.length==0) {
+		                		alert("导入学生成功！");
+		                	} else {
+		                		alert("第"+res.body+"行错误！");
+		                	}
+		                },function(res){
+		                    console.log(res);
+		                });
+					},
+					plus: function() {
+						this.students.push({
+							studentNo: "",
+							studentName: "",
+							sex: "男",
+							major: "",
+							grade: "",
+							class: ""
+						});
+					},
+					minus: function(n) {
+						this.students.splice(n, 1);
+					}
+				},
+				mounted() {
+					parent.homePage.innerText="导入学生";
+				}
+			});
+		</script>
+	</body>
+</html>

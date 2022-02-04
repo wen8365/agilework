@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>SIMS学生详情</title>
+		<style>
+			.subPageBox {
+				padding: 80px 80px 0px !important;
+			}
+		</style>
+		<!-- common -->
+		<link rel="stylesheet" href="css/common.css" />
+		<script type="text/javascript" src="js/common.js" ></script>
+		<!-- Vue -->
+		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<!--Font Awesome-->
+    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+	</head>
+	<body>
+		<div id="app">
+			<div class="subPageBox">
+				<table class="detailTable">
+					<tbody>
+						<tr>
+							<td class="info">
+								<h2>姓名：{{student.studentName}}</h2>
+								<h2>学号：{{student.studentNo}}</h2>
+								<h2>专业：{{student.major}}</h2>
+								<h2>年级：{{student.grade}}级</h2>
+								<h2>班级：{{student.class}}班</h2>
+							</td>
+							<td>
+								<h2>课程表</h2>
+								<table class="table">
+									<thead>
+										<tr>
+											<td v-for="i in tableNames.length">
+												{{tableNames[i-1]}}
+											</td>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td colspan="5" class="line">
+												<hr />
+											</td>
+										</tr>
+										<tr v-for="i in page.content.length">
+											<td>
+												{{page.content[i-1].courseNo}}
+											</td>
+											<td>
+												{{page.content[i-1].courseName}}
+											</td>
+											<td>
+												{{page.content[i-1].courseArrangement}}
+											</td>
+											<td>
+												{{page.content[i-1].classTime}}
+											</td>
+											<td>
+												{{page.content[i-1].classPlace}}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<br />
+								<div class="page">
+									<a v-on:click="doSearch(1)">&lt;&lt;</a>
+									<a v-if="page.number>1" v-on:click="doSearch(page.number-1)">前页</a>
+									<a v-else class="pageDefaultStyle">前页</a>
+									<span v-for="i in page.totalPages" v-bind:class="{'pageActive': i==page.number}" 
+										v-on:click="doSearch(i)">
+										{{i}}
+									</span>
+									<a v-if="page.number<page.totalPages" v-on:click="doSearch(page.number+1)">后页</a>
+									<a v-else class="pageDefaultStyle">后页</a>
+									<a v-on:click="doSearch(page.totalPages)">&gt;&gt;</a>
+								</div>
+							</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					tableNames: ["课程号", "课程名", "课程安排", "上课时间", "上课地点"],
+					student: {
+						studentNo: "MF12345678",
+						studentName: "张三",
+						sex: "男",
+						major: "软件工程",
+						grade: 2021,
+						class: 1
+					},
+					page: {
+		        		number: 1,
+		        		size: 6,
+		        		totalPages: 10,
+		        		content: [
+		        			{
+								courseNo: "ASD",
+								courseName: "敏捷软件开发",
+								courseArrangement: "1~18周",
+								classTime: "周三 2~4节",
+								classPlace: "费 812"
+							},
+							{
+								courseNo: "ASD",
+								courseName: "敏捷软件开发",
+								courseArrangement: "1~18周",
+								classTime: "周三 2~4节",
+								classPlace: "费 812"
+							},
+							{
+								courseNo: "ASD",
+								courseName: "敏捷软件开发",
+								courseArrangement: "1~18周",
+								classTime: "周三 2~4节",
+								classPlace: "费 812"
+							}
+		        		]
+		        	},
+					urls: [
+						''
+					]
+				},
+				methods: {
+					studentSelect: function() {
+						var jsonData={};
+		                //发送 post请求
+		                this.$http.post(this.urls[0], jsonData, {
+		                	emulateJSON: true
+		                }).then(function(res){
+		                	this.student=res.body;
+		                },function(res){
+		                    console.log(res);
+		                });
+					},
+					doSearch: function(number) {
+						var jsonData={
+							number: number,
+		        			size: this.page.size
+						};
+		                //发送 post请求
+		                this.$http.post(this.urls[1], jsonData, {
+		                	emulateJSON: true
+		                }).then(function(res){
+		                	this.page=res.body;
+		                },function(res){
+		                    console.log(res);
+		                });
+					},
+				},
+				mounted() {
+					parent.homePage.innerText="SIMS学生详情";
+					this.studentSelect();
+					this.doSearch(1);
+				}
+			});
+		</script>
+	</body>
+</html>
