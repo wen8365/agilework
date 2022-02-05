@@ -67,7 +67,7 @@ public class CourseController {
     }
     @PostMapping("/insertStuCourseRecords")
     @ResponseBody
-    public Map<String,Object>addCourseRecords(@NonNull List<StudentCourseRelationship>list){
+    public Map<String,Object>addCourseRecords(@RequestBody @NonNull List<StudentCourseRelationship>list){
         boolean flag=courseService.addElectCourseRecord(list);
         String message=flag?"插入成功":"插入失败";
         return resultMap(flag,message);
@@ -76,7 +76,7 @@ public class CourseController {
     @PostMapping("/deleteStuCourseRecords")
     @ResponseBody
     public Map<String,Object>deleteCourseRecords(@RequestHeader("sessionId")String sessionId,
-                                                 @NonNull List<String>courseNos){
+                                                 @RequestBody @NonNull List<String>courseNos){
         Session session = sessionService.getSession(sessionId);
         User user=session.getUser();
         String studentNo=user.getUserNo();
