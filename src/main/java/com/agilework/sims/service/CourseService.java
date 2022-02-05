@@ -2,12 +2,15 @@ package com.agilework.sims.service;
 
 import com.agilework.sims.domain.Session;
 import com.agilework.sims.entity.Course;
+import com.agilework.sims.entity.StudentCourseRelationship;
 import com.agilework.sims.entity.User;
 import com.agilework.sims.repository.CourseRepository;
+import com.agilework.sims.repository.StuCourseRelationshipRepository;
 import com.agilework.sims.util.SLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,6 +20,8 @@ public class CourseService {
     private CourseRepository courseRepository;
     @Autowired
     private SessionService sessionService;
+    @Autowired
+    private StuCourseRelationshipRepository stuCourseRelationshipRepository;
 
     public List<Course> queryCourse(String sessionId){
         Session session = sessionService.getSession(sessionId);
@@ -43,15 +48,20 @@ public class CourseService {
         return courseRepository.findByCourseNoAndPublished(courseNo,published);
     }
 
-    public String deleteCourseByCourseNo(String courseNo){
+    public boolean deleteCourseByCourseNo(String courseNo){
         Course course=courseRepository.findByCourseNo(courseNo);
         if(course==null){
             SLogger.error(TAG, "courseNo invalid, courseNo=" + courseNo);
-            return "Course do not exists.";
+            return false;
         }else{
             SLogger.info(TAG,"start delete course,courseNo="+courseNo);
             courseRepository.deleteCourseByCourseNo(courseNo);
-            return "Delete Success.";
+            Course course1=courseRepository.findByCourseNo(courseNo);
+            if(course1==null){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
     public boolean addCourses(List<Course>list){
@@ -61,5 +71,39 @@ public class CourseService {
         }else{
             return false;
         }
+    }
+    public boolean changeCourseStatues(String courseNo,int published){
+        int res=courseRepository.changeCourseStatus(courseNo,published);
+        if(res>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public boolean addElectCourseRecord(List<StudentCourseRelationship>list){
+        List res=stuCourseRelationshipRepository.saveAll(list);
+        if(res.size()==list.size()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean deleteCourseRecords(String studentNo,List<String>courseNos){
+        int res=stuCourseRelationshipRepository.deleteCourseRecords(studentNo,courseNos);
+        if(res>0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public List<Course>queryCourseRecords(String studentNo){
+        List<String>courseNos=stuCourseRelationshipRepository.findByStudentNo(studentNo);
+        List<Course>res=new ArrayList<>();
+        for(String courseNo:courseNos){
+            Course course=courseRepository.findByCourseNo(courseNo);
+            res.add(course);
+        }
+        return res;
     }
 }
