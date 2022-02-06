@@ -10,3 +10,14 @@ function checkAll() {
 if(!sessionStorage.getItem("sessionId")) {
 	parent.location.href="login.html"
 }
+// 封装Vue的post请求，包含headers
+function post(url, jsonData, fun) {
+	Vue.http.post(url, jsonData, {
+		emulateJSON: true,
+		headers: {
+			sessionId: sessionStorage.getItem("sessionId")
+		}
+	}).then(fun, function(res){
+	    console.log(res);
+	});
+}

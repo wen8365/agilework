@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static com.agilework.sims.util.ErrorCode.*;
@@ -216,5 +217,10 @@ public class StudentController {
         resp.setErrCode(errorCode.getCode());
         resp.setRows(rows);
         return resp;
+    }
+    
+    @PostMapping("/studentConditionSelect")
+    public Map<String, List<?>> studentConditionSelect() {
+    	return studentService.studentConditionSelect();
     }
 }

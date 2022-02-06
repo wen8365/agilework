@@ -21,8 +21,11 @@ import org.springframework.stereotype.Service;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -99,6 +102,7 @@ public class StudentService {
 
     private Specification<StudentV> createSpecification(final StudentInfo studentInfo) {
         return (root, criteriaQuery, criteriaBuilder) -> {
+            Predicate studentNoPredicate = null, studentNamePredicate = null;
             List<Predicate> list = new ArrayList<>();
             Path<String> studentNo = root.get("studentNo");
             Path<String> studentName = root.get("studentName");
@@ -106,32 +110,36 @@ public class StudentService {
             Path<String> major = root.get("major");
             Path<Integer> grade = root.get("grade");
             Path<Integer> clazz = root.get("clazz");
+            
+            System.out.println(studentInfo);
 
-            if (studentNo != null) {
-                Predicate p = criteriaBuilder.like(studentNo, studentInfo.getStudentNo());
-                list.add(p);
+            if (studentInfo.getStudentNo() != null) {
+            	studentNoPredicate = criteriaBuilder.like(studentNo, "%"+ studentInfo.getStudentNo() + "%");
             }
-            if (studentName != null) {
-                Predicate p = criteriaBuilder.like(studentName, studentInfo.getStudentName());
-                list.add(p);
+            if (studentInfo.getStudentName() != null) {
+            	studentNamePredicate = criteriaBuilder.like(studentName, "%"+ studentInfo.getStudentName() + "%");
             }
-            if (sex != null) {
+            if (studentInfo.getSex() != null) {
                 Predicate p = criteriaBuilder.equal(sex, studentInfo.getSex());
                 list.add(p);
             }
-            if (major != null) {
+            if (studentInfo.getMajor() != null) {
                 Predicate p = criteriaBuilder.like(major, studentInfo.getMajor());
                 list.add(p);
             }
-            if (grade != null) {
+            if (studentInfo.getGrade() != null) {
                 Predicate p = criteriaBuilder.equal(grade, studentInfo.getGrade());
                 list.add(p);
             }
-            if (clazz != null) {
+            if (studentInfo.getClazz() != null) {
                 Predicate p = criteriaBuilder.equal(clazz, studentInfo.getClazz());
                 list.add(p);
             }
-            return criteriaBuilder.or(list.toArray(new Predicate[0]));
+            return criteriaBuilder.and(
+            	criteriaBuilder.or(studentNoPredicate, studentNamePredicate), 
+            	list.size()>0 ? criteriaBuilder.and(list.toArray(new Predicate[0])) : 
+                		criteriaBuilder.isTrue(criteriaBuilder.literal(true))
+            );
         };
     }
 
@@ -162,5 +170,28 @@ public class StudentService {
         }
         SLogger.info(TAG, "remove complete, row=" + rows);
         return new Tuple<>(ErrorCode.NORMAL, rows);
+    }
+    
+    public Map<String, List<?>> studentConditionSelect() {
+    	List<StudentV> studentVs=studentVRepository.findAll();
+    	Map<String, List<?>> map=new HashMap<String, List<?>>();
+    	
+    	List<String> sexes=studentVs.stream().map(StudentV::getSex).distinct().sorted()
+    		.collect(Collectors.toList());
+    	map.put("sexes", sexes);
+    	
+    	List<String> majors=studentVs.stream().map(StudentV::getMajor).distinct().sorted()
+    		.collect(Collectors.toList());
+    	map.put("majors", majors);
+    	
+    	List<Integer> grades=studentVs.stream().map(StudentV::getGrade).distinct().sorted()
+        	.collect(Collectors.toList());
+    	map.put("grades", grades);
+    	
+    	List<Integer> classes=studentVs.stream().map(StudentV::getClazz).distinct().sorted()
+    		.collect(Collectors.toList());
+    	map.put("classes", classes);
+    	
+    	return map;
     }
 }

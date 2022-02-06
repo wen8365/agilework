@@ -143,79 +143,19 @@
 					searchText: "",
 					conditions: {
 						sexes: ["男", "女"],
-						majors: ["软件工程", "计算机科学", "大数据"],
-						grades: [2019, 2020, 2021],
-						classes: [1, 2, 3]
+						majors: [],
+						grades: [],
+						classes: []
 					},
 					page: {
 		        		number: 1,
 		        		size: 6,
 		        		totalPages: 10,
-		        		content: [
-		        			{
-								id: 0,
-								studentNo: "MF12345678",
-								studentName: "张三",
-								sex: "男",
-								major: "软件工程",
-								grade: "2021",
-								class: "1",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "MF12345678",
-								studentName: "张三",
-								sex: "男",
-								major: "软件工程",
-								grade: "2021",
-								class: "1",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "MF12345678",
-								studentName: "张三",
-								sex: "男",
-								major: "软件工程",
-								grade: "2021",
-								class: "1",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "MF12345678",
-								studentName: "张三",
-								sex: "男",
-								major: "软件工程",
-								grade: "2021",
-								class: "1",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "MF12345678",
-								studentName: "张三",
-								sex: "男",
-								major: "软件工程",
-								grade: "2021",
-								class: "1",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "MF12345678",
-								studentName: "张三",
-								sex: "男",
-								major: "软件工程",
-								grade: "2021",
-								class: "1",
-								status: 0
-							},
-		        		]
+		        		content: []
 		        	},
 					urls: [
-						''
+						'studentSelectByConditionBySearchTextByPage',
+						'studentConditionSelect'
 					]
 				},
 				methods: {
@@ -226,27 +166,23 @@
 							grade: this.condition.grade!="全选"?this.condition.grade:null,
 							class: this.condition.class!="全选"?this.condition.class:null,
 							searchText: this.searchText,
-							number: number,
+							number: number-1,
 		        			size: this.page.size
 						};
+						console.log(jsonData);
 		                //发送 post请求
-		                this.$http.post(this.urls[0], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.page=res.body;
-		                },function(res){
-		                    console.log(res);
+		                post(this.urls[0], JSON.stringify(jsonData), function(res) {
+		                	console.log(res);
+		                	v.page=res.body;
+		                	v.page.number=v.page.number+1;
 		                });
 					},
 					conditionSelect: function() {
 						var jsonData={};
 		                //发送 post请求
-		                this.$http.post(this.urls[1], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.conditions=res.body;
-		                },function(res){
-		                    console.log(res);
+		                post(this.urls[1], jsonData, function(res) {
+		                	console.log(res);
+		                	v.conditions=res.body;
 		                });
 					},
 					importStudent: function() {
