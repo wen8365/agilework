@@ -20,17 +20,17 @@ public class CourseControllerTest {
     private CourseController courseController;
     @Autowired
     private LoginController loginController;
-    private final String p = "Abc123456=";
+    private static final String P = "Abc123456=";
     @Test
     public void testQueryCourses(){
         //student account
-        LoginReq req = new LoginReq("MF21320138", p);
+        LoginReq req = new LoginReq("MF21320138", P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         List<Course>list=courseController.queryCourses(sessionId);
         Assertions.assertEquals(list.size(),2);
         //teacher account
-        LoginReq req1 = new LoginReq("MF21320137", p);
+        LoginReq req1 = new LoginReq("MF21320137", P);
         LoginResp resp1 = loginController.login(req1);
         String sessionId1=resp1.getSessionId();
         List<Course>list1=courseController.queryCourses(sessionId1);
@@ -39,14 +39,14 @@ public class CourseControllerTest {
     @Test
     public void testFindCourse(){
         //student account
-        LoginReq req = new LoginReq("MF21320138", p);
+        LoginReq req = new LoginReq("MF21320138", P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         Course course=courseController.findCourse(sessionId,"202205");
         SLogger.info(TAG, "course=" + course);
 
         //teacher account
-        LoginReq req1 = new LoginReq("MF21320137", p);
+        LoginReq req1 = new LoginReq("MF21320137", P);
         LoginResp resp1 = loginController.login(req1);
         String sessionId1=resp1.getSessionId();
         Course course1=courseController.findCourse(sessionId1,"202201");

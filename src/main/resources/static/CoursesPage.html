@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<title>SIMS课程列表</title>
+		<style>
+			.operator {
+				margin-left: 4%;
+			}
+			td {
+				width: 16%;
+				border: 1px darkgrey solid;
+				padding: 10px;
+			}
+			.checkboxTd {
+				width: 4%;
+				border: 0px;
+			}
+		</style>
+		<!-- common -->
+		<link rel="stylesheet" href="css/common.css" />
+		<script type="text/javascript" src="js/common.js" ></script>
+		<!-- Vue -->
+		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<!--Font Awesome-->
+    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+	</head>
+	<body>
+		<div id="app">
+			<div class="subPageBox">
+				<input type="button" class="btn" value="查看我的课程" /><br /><br />
+				<div class="operator">
+					<select class="select" v-model="condition">
+						<option value="筛选">筛选</option>
+						<option value="1">1</option>
+						<option value="2">2</option>					
+						<option value="3">3</option>
+					</select>
+					<i class="fa fa-filter"></i>
+					<input type="text" class="search" v-model="searchText" placeholder="搜索···" />
+					<i class="fa fa-search" v-on:click="doSearch(1)"></i>
+				</div>
+				<table class="table">
+					<thead>
+						<tr>
+							<td class="checkboxTd">
+								<input type="checkbox" name="checkbox" onclick="checkAll()"/>
+							</td>
+							<td v-for="i in tableNames.length">
+								{{tableNames[i-1]}}
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="checkboxTd"></td>
+							<td colspan="6" class="line">
+								<hr />
+							</td>
+						</tr>
+						<tr v-for="i in page.content.length">
+							<td class="checkboxTd">
+								<input type="checkbox" name="checkbox" />
+							</td>
+							<td>
+								{{page.content[i-1].studentNo}}
+							</td>
+							<td>
+								{{page.content[i-1].studentName}}
+							</td>
+							<td>
+								{{page.content[i-1].sex}}
+							</td>
+							<td>
+								{{page.content[i-1].major}}
+							</td>
+							<td>
+								{{page.content[i-1].grade}}
+							</td>
+							<td>
+								{{page.content[i-1].class}}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<br />
+				<div class="page">
+					<a v-on:click="doSearch(1)">&lt;&lt;</a>
+					<a v-if="page.number>1" v-on:click="doSearch(page.number-1)">前页</a>
+					<a v-else class="pageDefaultStyle">前页</a>
+					<span v-for="i in page.totalPages" v-bind:class="{'pageActive': i==page.number}" 
+						v-on:click="doSearch(i)">
+						{{i}}
+					</span>
+					<a v-if="page.number<page.totalPages" v-on:click="doSearch(page.number+1)">后页</a>
+					<a v-else class="pageDefaultStyle">后页</a>
+					<a v-on:click="doSearch(page.totalPages)">&gt;&gt;</a>
+				</div>
+			</div>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					tableNames: ["课程号", "课程名", "所属专业", "课程安排", "上课时间", "考试时间"],
+					condition: "筛选",
+					searchText: "",
+					page: {
+		        		number: 1,
+		        		size: 6,
+		        		totalPages: 10,
+		        		content: [
+		        			{
+								id: 0,
+								studentNo: "ASD",
+								studentName: "敏捷软件开发",
+								sex: "软件工程",
+								major: "1-18周",
+								grade: "周三2-4节",
+								class: " ",
+								status: 0
+							},
+							{
+								id: 0,
+								studentNo: "ASD",
+								studentName: "敏捷软件开发",
+								sex: "软件工程",
+								major: "1-18周",
+								grade: "周三2-4节",
+								class: " ",
+								status: 0
+							},
+							{
+								id: 0,
+								studentNo: "ASD",
+								studentName: "敏捷软件开发",
+								sex: "软件工程",
+								major: "1-18周",
+								grade: "周三2-4节",
+								class: " ",
+								status: 0
+							},
+							{
+								id: 0,
+								studentNo: "ASD",
+								studentName: "敏捷软件开发",
+								sex: "软件工程",
+								major: "1-18周",
+								grade: "周三2-4节",
+								class: " ",
+								status: 0
+							},
+							{
+								id: 0,
+								studentNo: "ASD",
+								studentName: "敏捷软件开发",
+								sex: "软件工程",
+								major: "1-18周",
+								grade: "周三2-4节",
+								class: " ",
+								status: 0
+							},
+							{
+								id: 0,
+								studentNo: "ASD",
+								studentName: "敏捷软件开发",
+								sex: "软件工程",
+								major: "1-18周",
+								grade: "周三2-4节",
+								class: " ",
+								status: 0
+							}
+		        		]
+		        	},
+					urls: [
+						''
+					]
+				},
+				methods: {
+					doSearch: function(number) {
+						var jsonData={
+							searchText: this.searchText,
+							number: this.page.number,
+		        			size: this.page.size
+						};
+		                //发送 post请求
+		                this.$http.post(this.urls[0], jsonData, {
+		                	emulateJSON: true
+		                }).then(function(res){
+		                	this.page=res.body;
+		                },function(res){
+		                    console.log(res);
+		                });
+					},
+				},
+				mounted() {
+					parent.homePage.innerText="SIMS学生列表";
+					this.doSearch(1);
+				}
+			});
+		</script>
+	</body>
+</html>
