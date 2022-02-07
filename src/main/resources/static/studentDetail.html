@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 	<head>
 		<meta charset="UTF-8">
 		<title>SIMS学生详情</title>
@@ -24,14 +24,43 @@
 					<tbody>
 						<tr>
 							<td class="info">
-								<h2>姓名：{{student.studentName}}</h2>
-								<h2>学号：{{student.studentNo}}</h2>
-								<h2>专业：{{student.major}}</h2>
-								<h2>年级：{{student.grade}}级</h2>
-								<h2>班级：{{student.class}}班</h2>
+								<div>
+									<h1>学生详情</h1>
+									<i v-if="!edited" class="fa fa-edit" v-on:click="studentUpdate()"></i>
+									<i v-else class="fa fa-save" v-on:click="studentSave()"></i>
+								</div>
+								<h2>
+									<span>姓名：</span>
+									<span>{{student.studentName}}</span>
+								</h2>
+								<h2>
+									<span>学号：</span>
+									<span>{{student.studentNo}}</span>
+								</h2>
+								<h2>
+									<span>专业：</span>
+									<span v-if="edited&&role==1">
+										<input type="text" v-model="newStudent.major" />
+									</span>
+									<span v-else>{{student.major}}</span>
+								</h2>
+								<h2>
+									<span>年级：</span>
+									<span v-if="edited&&role==1">
+										<input type="number" v-model="newStudent.grade" />级
+									</span>
+									<span v-else>{{student.grade}}级</span>
+								</h2>
+								<h2>
+									<span>班级：</span>
+									<span v-if="edited">
+										<input type="number" v-model="newStudent.class" />班
+									</span>
+									<span v-else>{{student.class}}班</span>
+								</h2>
 							</td>
 							<td>
-								<h2>课程表</h2>
+								<h1>课程表</h1>
 								<table class="table">
 									<thead>
 										<tr>
@@ -91,13 +120,24 @@
 				data: {
 					tableNames: ["课程号", "课程名", "课程安排", "上课时间", "上课地点"],
 					student: {
-						studentNo: "MF12345678",
-						studentName: "张三",
-						sex: "男",
-						major: "软件工程",
-						grade: 2021,
-						class: 1
+						studentNo: "",
+						studentName: "",
+						sex: "",
+						major: "",
+						grade: "",
+						class: ""
 					},
+					newStudent: {
+						studentNo: "",
+						studentName: "",
+						sex: "",
+						major: "",
+						grade: "",
+						class: ""
+					},
+					studentNo: '',
+					role: 0,
+					edited: false,
 					page: {
 		        		number: 1,
 		        		size: 6,
@@ -127,19 +167,64 @@
 		        		]
 		        	},
 					urls: [
-						''
+						'studentQuery',
+						'studentUpdate'
 					]
 				},
 				methods: {
 					studentSelect: function() {
 						var jsonData={};
+		                //发送 get请求
+		                get(this.urls[0]+"?studentNo="+this.studentNo, function(res) {
+		                	console.log(res);
+		                	var studentQueryResp=res.body;
+		                	switch(studentQueryResp.errCode) {
+		                	case 0:
+		                		v.student=studentQueryResp.student;
+		                		break;
+		                	case 1303:
+		                		alert("用户没有操作权限（只能由老师查学生和自己查自己）");
+		                		parent.location.href="login.html";
+		                		break;
+		                	case 1304:
+		                		alert("学生记录不存在！");
+		                		break;
+		                	default:
+		                		alert("单个学生查询失败！");
+		                	}
+		                });
+					},
+					studentUpdate: function() {
+						this.edited=true;
+						this.newStudent=JSON.parse(JSON.stringify(this.student));
+					},
+					studentSave: function() {
+						var jsonData={
+							student: this.newStudent
+						};
+						console.log(jsonData);
 		                //发送 post请求
-		                this.$http.post(this.urls[0], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.student=res.body;
-		                },function(res){
-		                    console.log(res);
+		                post(this.urls[1], JSON.stringify(jsonData), function(res) {
+		                	console.log(res);
+		                	var errCode=res.body.errCode;
+		                	switch(errCode) {
+		                	case 0:
+		                		alert("保存成功！");
+		                		v.edited=false;
+		                		break;
+		                	case 1304:
+		                		alert("学生记录不存在！");
+		                		break;
+		                	case 1305:
+		                		alert("没有权限（只能由管理员执行此操作）！");
+		                		parent.location.href="login.html";
+		                		break;
+		                	case 1306:
+		                		alert("更新的信息有误！");
+								break;
+		                	default:
+		                		alert("保存失败！");
+		                	}
 		                });
 					},
 					doSearch: function(number) {
@@ -155,12 +240,14 @@
 		                },function(res){
 		                    console.log(res);
 		                });
-					},
+					}
 				},
 				mounted() {
 					parent.homePage.innerText="SIMS学生详情";
+					this.studentNo=sessionStorage.getItem("studentNo");
+					this.role=sessionStorage.getItem("role");
 					this.studentSelect();
-					this.doSearch(1);
+					//this.doSearch(1);
 				}
 			});
 		</script>
