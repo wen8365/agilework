@@ -21,3 +21,13 @@ function post(url, jsonData, fun) {
 	    console.log(res);
 	});
 }
+// 封装Vue的get请求，包含headers
+function get(url, fun) {
+	Vue.http.get(url, {
+		headers: {
+			sessionId: sessionStorage.getItem("sessionId")
+		}
+	}).then(fun, function(res){
+	    console.log(res);
+	});
+}
