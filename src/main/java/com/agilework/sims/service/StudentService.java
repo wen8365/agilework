@@ -110,8 +110,6 @@ public class StudentService {
             Path<String> major = root.get("major");
             Path<Integer> grade = root.get("grade");
             Path<Integer> clazz = root.get("clazz");
-            
-            System.out.println(studentInfo);
 
             if (studentInfo.getStudentNo() != null) {
             	studentNoPredicate = criteriaBuilder.like(studentNo, "%"+ studentInfo.getStudentNo() + "%");
@@ -124,7 +122,7 @@ public class StudentService {
                 list.add(p);
             }
             if (studentInfo.getMajor() != null) {
-                Predicate p = criteriaBuilder.like(major, studentInfo.getMajor());
+                Predicate p = criteriaBuilder.equal(major, studentInfo.getMajor());
                 list.add(p);
             }
             if (studentInfo.getGrade() != null) {
@@ -136,8 +134,8 @@ public class StudentService {
                 list.add(p);
             }
             return criteriaBuilder.and(
-            	criteriaBuilder.or(studentNoPredicate, studentNamePredicate), 
-            	list.size()>0 ? criteriaBuilder.and(list.toArray(new Predicate[0])) : 
+            	criteriaBuilder.or(studentNoPredicate, studentNamePredicate),
+            	list.size()>0 ? criteriaBuilder.and(list.toArray(new Predicate[0])) :
                 		criteriaBuilder.isTrue(criteriaBuilder.literal(true))
             );
         };
@@ -171,27 +169,27 @@ public class StudentService {
         SLogger.info(TAG, "remove complete, row=" + rows);
         return new Tuple<>(ErrorCode.NORMAL, rows);
     }
-    
+
     public Map<String, List<?>> studentConditionSelect() {
     	List<StudentV> studentVs=studentVRepository.findAll();
-    	Map<String, List<?>> map=new HashMap<String, List<?>>();
-    	
+    	Map<String, List<?>> map= new HashMap<>();
+
     	List<String> sexes=studentVs.stream().map(StudentV::getSex).distinct().sorted()
     		.collect(Collectors.toList());
     	map.put("sexes", sexes);
-    	
+
     	List<String> majors=studentVs.stream().map(StudentV::getMajor).distinct().sorted()
     		.collect(Collectors.toList());
     	map.put("majors", majors);
-    	
+
     	List<Integer> grades=studentVs.stream().map(StudentV::getGrade).distinct().sorted()
         	.collect(Collectors.toList());
     	map.put("grades", grades);
-    	
+
     	List<Integer> classes=studentVs.stream().map(StudentV::getClazz).distinct().sorted()
     		.collect(Collectors.toList());
     	map.put("classes", classes);
-    	
+
     	return map;
     }
 }
