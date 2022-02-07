@@ -102,7 +102,8 @@ public class StudentService {
 
     private Specification<StudentV> createSpecification(final StudentInfo studentInfo) {
         return (root, criteriaQuery, criteriaBuilder) -> {
-            Predicate studentNoPredicate = null, studentNamePredicate = null;
+            Predicate studentNoPredicate = null;
+            Predicate studentNamePredicate = null;
             List<Predicate> list = new ArrayList<>();
             Path<String> studentNo = root.get("studentNo");
             Path<String> studentName = root.get("studentName");
