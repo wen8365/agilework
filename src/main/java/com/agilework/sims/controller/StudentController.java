@@ -132,6 +132,7 @@ public class StudentController {
         studentInfo.setMajor(req.getMajor());
         studentInfo.setGrade(req.getGrade());
         studentInfo.setClazz(req.getClazz());
+        SLogger.info(TAG, "query students, condition=" + studentInfo);
         return studentService.queryStudents(studentInfo, req.getCurPage(), req.getPageSize());
     }
 

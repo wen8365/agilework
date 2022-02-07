@@ -8,6 +8,7 @@ import com.agilework.sims.util.SLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,7 +23,7 @@ public class CourseService {
         Session session = sessionService.getSession(sessionId);
         if(session==null){
             SLogger.info(TAG, "session NOT FOUND, id=" + sessionId);
-            return null;
+            return new ArrayList<>();
         }
         User user=session.getUser();
         if(user.getRole()==0){
@@ -33,7 +34,7 @@ public class CourseService {
             return courseRepository.findAllCourses();
         }else{
             SLogger.error(TAG, "role invalid, id=" + sessionId);
-            return null;
+            return new ArrayList<>();
         }
     }
     public Course findCourseByCourseNo(String courseNo){
@@ -56,10 +57,6 @@ public class CourseService {
     }
     public boolean addCourses(List<Course>list){
         List<Course>result=courseRepository.saveAll(list);
-        if(result.size()==list.size()){
-            return true;
-        }else{
-            return false;
-        }
+        return result.size() == list.size();
     }
 }
