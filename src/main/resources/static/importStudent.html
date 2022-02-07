@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 	<head>
 		<meta charset="UTF-8">
 		<title>导入学生</title>
 		<style>
 			td {
-				width: 12.5%;
+				width: 11.1%;
 			}
 		</style>
 		<!-- common -->
@@ -35,39 +35,44 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td colspan="8" class="line">
+							<td colspan="9" class="line">
 								<hr />
 							</td>
 						</tr>
 						<tr v-for="i in students.length">
-							<td>{{i}}</td>
-							<td>
+							<td v-bind:class="{tdLeftBorder: invalidIndexes[i-1]}">{{i}}</td>
+							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<input type="text" v-model="students[i-1].studentNo" />
 							</td>
-							<td>
+							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<input type="text" v-model="students[i-1].studentName" />
 							</td>
-							<td>
+							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
+								<input type="text" v-model="students[i-1].password" />
+							</td>
+							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<select class="select" v-model="students[i-1].sex">
 									<option value="男">男</option>
 									<option value="女">女</option>
+									<option value="M">M</option>
+									<option value="W">W</option>
 								</select>
 							</td>
-							<td>
+							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<input type="text" v-model="students[i-1].major" />
 							</td>
-							<td>
+							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<input type="number" v-model="students[i-1].grade" placeholder="级" />
 							</td>
-							<td>
+							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<input type="number" v-model="students[i-1].class" placeholder="班" />
 							</td>
-							<td>
+							<td v-bind:class="{tdRightBorder: invalidIndexes[i-1]}">
 								<i class="fa fa-trash-o" v-on:click="minus(i-1)"></i>
 							</td>
 						</tr>
 						<tr>
-							<td colspan="8" class="plus">
+							<td colspan="9" class="plus">
 								<i class="fa fa-plus-circle" v-on:click="plus()"></i>
 							</td>
 						</tr>
@@ -79,17 +84,19 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					tableNames: ["学号", "姓名", "性别", "专业", "年级", "班级", "操作"],
+					tableNames: ["学号", "姓名", "密码", "性别", "专业", "年级", "班级", "操作"],
 					students: [{
 						studentNo: "",
 						studentName: "",
+						password: "",
 						sex: "男",
 						major: "",
 						grade: "",
 						class: ""	
 					}],
+					invalidIndexes: [false],
 					urls: [
-						''
+						'studentsImport'
 					]
 				},
 				methods: {
@@ -97,32 +104,58 @@
 						location.href="studentManagement.html";
 					},
 					importStudent: function() {
-						var jsonData=this.students;
+						for(var i=0; i<this.students.length; i++) {
+							this.students[i].order=i+1;
+						}
+						var jsonData={
+							students: this.students
+						}
+						console.log(jsonData);
 		                //发送 post请求
-		                this.$http.post(this.urls[0], JSON.stringify(jsonData), {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	if(res.body.length==0) {
-		                		alert("导入学生成功！");
-		                	} else {
-		                		alert("第"+res.body+"行错误！");
+		                post(this.urls[0], JSON.stringify(jsonData), function(res) {
+		                	console.log(res);
+		                	var studentsImportResp=res.body;
+		                	switch(studentsImportResp.errCode) {
+		                	case 0:
+		                		alert("导入正常！");
+		                		break;
+		                	case 1301:
+		                		alert("没有权限（只能由管理员执行此操作）！");
+		                		sessionStorage.clear();
+		                		parent.location.href="login.html";
+		                		break;
+		                	case 1302:
+		                		alert("学生已存在！重复学生的记录:\n"+studentsImportResp.duplicate);	
+		                		break;
+		                	default:
+		                		alert("导入学生失败！");		
 		                	}
-		                },function(res){
-		                    console.log(res);
+		                	
+		                	for(var i=0; i<v.invalidIndexes.length; i++) {
+		                		v.invalidIndexes[i]=false;
+		                	}
+		                	
+		                	for(var i=0; i<studentsImportResp.invalidStudents.length; i++) {
+		                		var order=studentsImportResp.invalidStudents[i].order;
+		                		v.$set(v.invalidIndexes, order-1, true);
+		                	}
 		                });
 					},
 					plus: function() {
 						this.students.push({
 							studentNo: "",
 							studentName: "",
+							password: "",
 							sex: "男",
 							major: "",
 							grade: "",
-							class: ""
+							class: ""	
 						});
+						this.invalidIndexes.push(false);
 					},
 					minus: function(n) {
 						this.students.splice(n, 1);
+						this.invalidIndexes.splice(n, 1);
 					}
 				},
 				mounted() {
