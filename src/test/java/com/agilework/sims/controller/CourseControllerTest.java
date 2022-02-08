@@ -1,6 +1,7 @@
 package com.agilework.sims.controller;
 
 import com.agilework.sims.entity.Course;
+import com.agilework.sims.entity.StudentCourseRelationship;
 import com.agilework.sims.util.SLogger;
 import com.agilework.sims.vo.LoginReq;
 import com.agilework.sims.vo.LoginResp;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +70,56 @@ public class CourseControllerTest {
         list.add(course);
         list.add(course1);
         Map<String, Object>map=courseController.addCourses(list);
+        Assertions.assertEquals(map.get("success"),true);
+    }
+    @Test
+    public void testChangeCourseStats(){
+        LoginReq req = new LoginReq("MF21320138", P);
+        LoginResp resp = loginController.login(req);
+        String sessionId=resp.getSessionId();
+        Map<String, Object>map=courseController.changeCourseStatus("202201",1);
+        Assertions.assertEquals(map.get("success"),true);
+
+    }
+    @Test
+    public void testInsertCourseRecord(){
+        List<StudentCourseRelationship>list=new ArrayList<>();
+        StudentCourseRelationship sc1=new StudentCourseRelationship();
+        sc1.setCourseNo("212201");
+        sc1.setStudentNo("MF21320138");
+        sc1.setElectiveTime(new Date());
+        StudentCourseRelationship sc2=new StudentCourseRelationship();
+        sc2.setCourseNo("212205");
+        sc2.setStudentNo("MF21320138");
+        sc2.setElectiveTime(new Date());
+        list.add(sc1);
+        list.add(sc2);
+        Map<String, Object>map=courseController.addCourseRecords(list);
+        Assertions.assertEquals(map.get("success"),true);
+    }
+    @Test
+    public void testQueryCourseRecord(){
+        LoginReq req = new LoginReq("MF21320138", P);
+        LoginResp resp = loginController.login(req);
+        String sessionId=resp.getSessionId();
+        List<Course>res=courseController.queryCourseRecords(sessionId);
+        Assertions.assertEquals(res.size(),2);
+    }
+    @Test
+    public void testUpdateCourse(){
+        LoginReq req1 = new LoginReq("MF21320137", P);
+        LoginResp resp1 = loginController.login(req1);
+        String sessionId1=resp1.getSessionId();
+        Course course1=courseController.findCourse(sessionId1,"202201");
+        course1.setCourseName("software engineering");
+        course1.setMajor("se");
+        Course course=courseController.updateCourse(course1);
+        Assertions.assertEquals(course.getCourseName(),"software engineering");
+        Assertions.assertEquals(course.getMajor(),"se");
+    }
+    @Test
+    public void testDeleteCourse(){
+        Map<String, Object>map=courseController.deleteCourse("202208");
         Assertions.assertEquals(map.get("success"),true);
     }
 }

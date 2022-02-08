@@ -23,6 +23,11 @@ public interface CourseRepository extends JpaRepository<Course,String>{
     @Modifying
     @Transactional
     @Query("delete from Course c where c.courseNo=:courseNo")
-    public int deleteCourseByCourseNo(@Param("courseNo") String courseNo);
+    public void deleteCourseByCourseNo(String courseNo);
+
+    @Modifying
+    @Transactional
+    @Query("update Course c set c.published=:published where c.courseNo=:courseNo")
+    public int changeCourseStatus(String courseNo,int published);
 
 }
