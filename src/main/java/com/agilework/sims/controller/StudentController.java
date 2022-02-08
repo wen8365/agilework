@@ -90,7 +90,6 @@ public class StudentController {
     private boolean isStudentInvalid(StudentInfo student) {
         return student.getStudentNo() == null || verifier.isUserNameInvalid(student.getStudentNo())
                 || student.getStudentName() == null || verifier.isRealNameInvalid(student.getStudentName())
-                || student.getPassword() == null || verifier.isPasswordInvalid(student.getPassword())
                 || student.getSex() == null || verifier.isSexInvalid(student.getSex())
                 || student.getMajor() == null || verifier.isMajorInvalid(student.getMajor())
                 || student.getGrade() == null || student.getGrade() <= 0
@@ -160,7 +159,6 @@ public class StudentController {
     private boolean isStudentInvalid2(StudentInfo student) {
         return student.getStudentNo() == null || verifier.isUserNameInvalid(student.getStudentNo())
                 || student.getStudentName() != null && verifier.isRealNameInvalid(student.getStudentName())
-                || student.getPassword() != null && verifier.isPasswordInvalid(student.getPassword())
                 || student.getSex() != null && verifier.isSexInvalid(student.getSex())
                 || student.getMajor() != null && verifier.isMajorInvalid(student.getMajor())
                 || student.getGrade() != null && student.getGrade() <= 0

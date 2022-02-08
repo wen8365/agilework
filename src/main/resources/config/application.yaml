@@ -37,6 +37,8 @@ user:
     normal: 0
     blocked: 1
     deleted: 2
+  default:
+    password: aG123456=
 
 login:
   session:

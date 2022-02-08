@@ -48,9 +48,6 @@
 								<input type="text" v-model="students[i-1].studentName" />
 							</td>
 							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
-								<input type="text" v-model="students[i-1].password" />
-							</td>
-							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<select class="select" v-model="students[i-1].sex">
 									<option value="男">男</option>
 									<option value="女">女</option>
@@ -84,11 +81,10 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					tableNames: ["学号", "姓名", "密码", "性别", "专业", "年级", "班级", "操作"],
+					tableNames: ["学号", "姓名", "性别", "专业", "年级", "班级", "操作"],
 					students: [{
 						studentNo: "",
 						studentName: "",
-						password: "",
 						sex: "男",
 						major: "",
 						grade: "",
@@ -145,7 +141,6 @@
 						this.students.push({
 							studentNo: "",
 							studentName: "",
-							password: "",
 							sex: "男",
 							major: "",
 							grade: "",
