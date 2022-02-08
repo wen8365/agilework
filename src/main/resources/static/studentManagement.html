@@ -34,28 +34,28 @@
 				<input type="button" class="btn" value="批量删除" v-on:click="batchDelete()" />
 				<br /><br />
 				<div class="operator">
-					<select class="select" v-model="condition.sex">
+					<select class="select" v-model="condition.sex" v-on:change="doSearch(1)">
 						<option value="全选">性别</option>
 						<option v-for="i in conditions.sexes.length" v-bind:value="conditions.sexes[i-1]">
 							{{conditions.sexes[i-1]}}
 						</option>
 					</select>
 					<i class="fa fa-filter"></i>
-					<select class="select" v-model="condition.major">
+					<select class="select" v-model="condition.major" v-on:change="doSearch(1)">
 						<option value="全选">专业</option>
 						<option v-for="i in conditions.majors.length" v-bind:value="conditions.majors[i-1]">
 							{{conditions.majors[i-1]}}
 						</option>
 					</select>
 					<i class="fa fa-filter"></i>
-					<select class="select" v-model="condition.grade">
+					<select class="select" v-model="condition.grade" v-on:change="doSearch(1)">
 						<option value="全选">年级</option>
 						<option v-for="i in conditions.grades.length" v-bind:value="conditions.grades[i-1]">
 							{{conditions.grades[i-1]}}级
 						</option>
 					</select>
 					<i class="fa fa-filter"></i>
-					<select class="select" v-model="condition.class">
+					<select class="select" v-model="condition.class" v-on:change="doSearch(1)">
 						<option value="全选">班级</option>
 						<option v-for="i in conditions.classes.length" v-bind:value="conditions.classes[i-1]">
 							{{conditions.classes[i-1]}}班
@@ -108,8 +108,7 @@
 								{{page.content[i-1].class}}班
 							</td>
 							<td>
-								<i class="fa fa-edit"></i>
-								<i class="fa fa-trash-o"></i>
+								<i class="fa fa-trash-o" v-on:click="studentDelete(i-1)"></i>
 							</td>
 						</tr>
 					</tbody>
@@ -155,7 +154,8 @@
 		        	},
 					urls: [
 						'studentSelectByConditionBySearchTextByPage',
-						'studentConditionSelect'
+						'studentConditionSelect',
+						'studentBatchRemove'
 					]
 				},
 				methods: {
@@ -189,7 +189,48 @@
 						location.href="importStudent.html";
 					},
 					batchDelete: function() {
+						var checkedIndexes=getCheckedIndexes();
+						var studentNoList=[];
+						for(var i=0; i<checkedIndexes.length; i++) {
+							studentNoList.push(this.page.content[checkedIndexes[i]].studentNo);
+						}
 						
+						if(checkedIndexes.length==0) {
+							alert("未选择学生！");
+						} else if(confirm("确认删除学号为"+studentNoList+"的学生吗？")) {
+							this.doDelete(studentNoList);
+						}
+					},
+					studentDelete: function(n) {
+						var studentNo=this.page.content[n].studentNo;
+						if(confirm("确认删除学号为"+studentNo+"的学生吗？")) {
+							var studentNoList=[studentNo];
+							this.doDelete(studentNoList);
+						}
+					},
+					doDelete: function(studentNoList) {
+						var jsonData={
+							studentNoList: studentNoList
+						};
+						console.log(jsonData);
+						//发送 post请求
+		                post(this.urls[2], JSON.stringify(jsonData), function(res) {
+		                	console.log(res);
+		                	var errCode=res.body.errCode;
+		                	var rows=res.body.rows;
+		                	switch(errCode) {
+		                	case 0:
+		                		alert("实际删除的行数为"+rows+"行");
+		                		v.doSearch(1);
+		                		break;
+		                	case 1307:
+		                		alert("没有权限（只能由管理员执行此操作）！");
+		                		parent.location.href="login.html";
+		                		break;
+		                	default:
+		                		alert("删除失败！");		
+		                	}
+		                });
 					},
 					seeStudent: function(studentNo) {
 						sessionStorage.setItem("studentNo", studentNo);
