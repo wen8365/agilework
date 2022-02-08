@@ -130,6 +130,20 @@ i {
 	border: 0px !important;
 	text-align: center;
 }
+.tdLeftBorder {
+	border-left-color: red !important;
+	border-top-color: red !important;
+	border-bottom-color: red !important;
+}
+.tdRightBorder {
+	border-right-color: red !important;
+	border-top-color: red !important;
+	border-bottom-color: red !important;
+}
+.tdMiddleBorder {
+	border-top-color: red !important;
+	border-bottom-color: red !important;
+}
 /* 详情表格样式 */
 .detailTable td {
 	padding: 10px;
@@ -138,8 +152,26 @@ i {
 .detailTable td h2 {
 	padding-bottom: 10px;
 }
+.detailTable h1 {
+	font-size: 32px;
+	margin-bottom: 10px;
+}
 .detailTable .info {
-	padding-right: 100px;
+	width: 350px;
+}
+.detailTable .info h1 {
+	display: inline-block;
+}
+.detailTable .info i {
+	font-size: 32px !important;
+	margin-left: 10px;
+}
+.detailTable .info input {
+	width: 100px;
+	height: 39px;
+	margin-right: 4px;
+	padding: 0px 10px;
+	border: 1px darkgrey solid;
 }
 /* 分页样式  */
 .page {
