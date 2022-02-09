@@ -89,7 +89,8 @@
 					userName: '',
 					password: '',
 					urls: [
-						'login'
+						'login',
+						'isLogin'
 					]
 				},
 				methods: {
@@ -147,7 +148,26 @@
 					},
 					doRegister: function() {
 						location.href="register.html";
+					},
+					checkLogin: function() {
+						this.$http.get(this.urls[1], {
+							headers: {
+								sessionId: sessionStorage.getItem("sessionId")
+							}
+						}).then(res => {
+								console.log(res);
+								var loginResp = res.body;
+								if (loginResp.errCode == 0) {
+									location.href="homePage.html";
+								}
+							}, errorRes => {
+								console.log(errorRes);
+							}
+						);
 					}
+				},
+				mounted() {
+					this.checkLogin();
 				}
 			});
 		</script>

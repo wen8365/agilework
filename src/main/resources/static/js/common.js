@@ -19,7 +19,7 @@ function getCheckedIndexes() {
 }
 // 判断是否登录
 if(!sessionStorage.getItem("sessionId")) {
-	parent.location.href="login.html"
+	gotoLogin()
 }
 // 封装Vue的post请求，包含headers
 function post(url, jsonData, fun) {
@@ -30,6 +30,9 @@ function post(url, jsonData, fun) {
 		}
 	}).then(fun, function(res){
 	    console.log(res);
+	    if (res.status==403) {
+	        gotoLogin()
+	    }
 	});
 }
 // 封装Vue的get请求，包含headers
@@ -40,6 +43,9 @@ function get(url, fun) {
 		}
 	}).then(fun, function(res){
 	    console.log(res);
+            if (res.status==403) {
+                gotoLogin()
+            }
 	});
 }
 // 字符串转Date对象
@@ -51,4 +57,10 @@ function getDate(str) {
 	var minute=str.substring(14, 16);
 	var second=str.substring(17, 19);
 	return new Date(year, month-1, day, hour, minute, second);
+}
+
+function gotoLogin() {
+    sessionStorage.clear();
+    alert("用户未登录！");
+    parent.location.href="login.html";
 }
