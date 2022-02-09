@@ -102,8 +102,8 @@ public class StudentController {
         SLogger.info(TAG, "query student, sessionId=" + sessionId);
         Session session = sessionService.getSession(sessionId);
         User user = session.getUser();
-        if (user.getRole() > roleStudent || (user.getRole() == roleStudent)
-                && user.getUserNo().equals(studentNo)) {
+        if (user.getRole() > roleStudent || (user.getRole() == roleStudent
+                && user.getUserNo().equals(studentNo))) {
             // only allow teacher update students, or students update themselves
             StudentQueryResp resp = new StudentQueryResp();
             StudentInfo studentInfo = studentService.queryStudent(studentNo);
@@ -147,7 +147,8 @@ public class StudentController {
 
         Session session = sessionService.getSession(sessionId);
         User user = session.getUser();
-        if (user.getRole() > roleStudent) {
+        if (user.getRole() > roleStudent || (user.getRole() == roleStudent
+                && user.getUserNo().equals(studentInfo.getStudentNo()))) {
             // only allow teacher update students
             ErrorCode errorCode = studentService.updateStudent(studentInfo);
             return new StudentQueryResp(errorCode);

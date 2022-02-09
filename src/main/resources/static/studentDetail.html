@@ -14,15 +14,18 @@
 		<div id="app">
 			<div class="subPageBox">
 				<table class="detailTable">
-					<th scope="col" style="text-align: left"><h1>学生详情</h1></th>
 					<tbody>
 						<tr>
+							<th scope="col" style="text-align: left">
+								<h1>学生详情
+									<i v-if="edited" class="fa fa-save" v-on:click="studentSave()"></i>
+									<i v-if="edited" class="fa fa-close" v-on:click="cancelEdit()"></i>
+									<i v-else class="fa fa-edit" v-on:click="studentUpdate()"></i>
+								</h1>
+							</th>
+						</tr>
+						<tr>
 							<td class="info">
-								<div>
-									<h1>学生详情</h1>
-									<i v-if="!edited" class="fa fa-edit" v-on:click="studentUpdate()"></i>
-									<i v-else class="fa fa-save" v-on:click="studentSave()"></i>
-								</div>
 								<h2>
 									<span>姓名：</span>
 									<span>{{student.studentName}}</span>
@@ -205,13 +208,13 @@
 		                	case 0:
 		                		alert("保存成功！");
 		                		v.edited=false;
+		                		v.studentSelect();
 		                		break;
 		                	case 1304:
 		                		alert("学生记录不存在！");
 		                		break;
 		                	case 1305:
 		                		alert("没有权限（只能由管理员执行此操作）！");
-		                		parent.location.href="login.html";
 		                		break;
 		                	case 1306:
 		                		alert("更新的信息有误！");
@@ -220,6 +223,9 @@
 		                		alert("保存失败！");
 		                	}
 		                });
+					},
+					cancelEdit: function() {
+						this.edited=false;
 					},
 					doSearch: function(number) {
 						var jsonData={
