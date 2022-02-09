@@ -21,6 +21,8 @@
 		<div id="app">
 			<div class="subPageBox">
 				<input v-if="role==1" type="button" class="btn" value="导入课程" v-on:click="importCourse()" /><br /><br />
+				<input v-if="role==0" type="button" class="btn" value="选课" v-on:click="coursesPick()"/>
+				<input v-if="role==0" type="button" class="btn" value="退课" v-on:click="coursesWithdraw()"/>
 				<div class="operator">
 					<select class="select" v-model="condition">
 						<option value="筛选">筛选</option>
@@ -84,7 +86,7 @@
 								<div>
 									<input v-if="role==1&&!page.content[i-1].published" type="button" class="btn" value="发布" v-on:click="publishCourse(i-1)"/>
 									<input v-if="role==1&&page.content[i-1].published" type="button" class="btn" value="撤销" v-on:click="publishCourse(i-1)"/>
-									<input type="button" class="btn" value="删除" v-on:click="courseDelete(i-1)"/>
+									<input v-if="role==1" type="button" class="btn" value="删除" v-on:click="courseDelete(i-1)"/>
 								</div>
 							</td>
 						</tr>
@@ -122,7 +124,9 @@
 					urls: [
 						'queryCourses',
 						'deleteCourseByCourseNo',
-						'changeCourseStatues'
+						'changeCourseStatues',
+						'insertStuCourseRecords',
+						'deleteStuCourseRecords'
 					]
 				},
 				methods: {
@@ -170,6 +174,33 @@
 					seeCourse: function(courseNo) {
 						sessionStorage.setItem("courseNo", courseNo);
 						location.href="CourseDetails.html";
+					},
+					coursesPick: function() {
+						var checkedIndexes=getCheckedIndexes();
+						var courseList=[];
+						for(var i=0; i<checkedIndexes.length; i++) {
+
+						}
+						if(checkedIndexes.length==0) {
+							alert("未选择学生！");
+						} else {
+							post(this.urls[3], res => {
+							});
+						}
+					},
+					coursesWithdraw: function() {
+						var checkedIndexes=getCheckedIndexes();
+						var courseNoList=[];
+						for(var i=0; i<checkedIndexes.length; i++) {
+							courseNoList.push(this.page.content[checkedIndexes[i]].courseNo);
+						}
+						if(checkedIndexes.length==0) {
+							alert("未选择学生！");
+						} else {
+							post(this.urls[4], JSON.stringify(courseNoList), res => {
+
+							});
+						}
 					}
 				},
 				mounted() {
