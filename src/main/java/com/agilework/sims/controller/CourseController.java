@@ -37,7 +37,7 @@ public class CourseController {
     public List<Course> queryCourses(@RequestHeader("sessionId") @NonNull String sessionId){
         return courseService.queryCourse(sessionId);
     }
-    @GetMapping("findCourse")
+    @GetMapping("/findCourse")
     @ResponseBody
     public Course findCourse(@RequestHeader("sessionId") @NonNull String sessionId, String courseNo){
         Session session = sessionService.getSession(sessionId);

@@ -50,7 +50,7 @@
 								<input type="radio" v-bind:checked="courses[i-1].published" v-on:click="changeRadio(i-1)"/>
 							</td>
 							<td>
-								<input type="date" v-model="courses[i-1].examTime" />
+								<input type="datetime-local" v-model="courses[i-1].examTime" />
 							</td>
 							<td>
 								<input type="number" min="0" v-model="courses[i-1].examDuration" />
@@ -87,26 +87,23 @@
 						examAddr: ""
 					}],
 					urls: [
-						''
+						'insertCourses'
 					]
 				},
 				methods: {
 					toCourseManagement: function() {
-						location.href="courseManagement.html";
+						location.href="CoursesPage.html";
 					},
 					importCourse: function() {
 						var jsonData=this.courses;
-		                //发送 post请求
-		                this.$http.post(this.urls[0], JSON.stringify(jsonData), {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	if(res.body.length==0) {
-		                		alert("导入课程成功！");
-		                	} else {
-		                		alert("第"+res.body+"行错误！");
-		                	}
-		                },function(res){
-		                    console.log(res);
+						for(var i=0; i<jsonData.length; i++) {
+							jsonData[i].examDuration=parseInt(jsonData[i].examDuration);
+							jsonData[i].published=jsonData[i].published?1:0;
+						}
+						console.log(jsonData);
+						//发送 post请求
+		                post(this.urls[0], JSON.stringify(jsonData), function(res) {
+		                	alert(res.body.message);
 		                });
 					},
 					changeRadio: function(n) {
