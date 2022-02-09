@@ -8,14 +8,7 @@
 				width: 11.1%;
 			}
 		</style>
-		<!-- common -->
-		<link rel="stylesheet" href="css/common.css" />
-		<script type="text/javascript" src="js/common.js" ></script>
-		<!-- Vue -->
-		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
-		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
-		<!--Font Awesome-->
-    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+		<script src="js/dependencies.js"></script>
 	</head>
 	<body>
 		<div id="app">
@@ -46,9 +39,6 @@
 							</td>
 							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<input type="text" v-model="students[i-1].studentName" />
-							</td>
-							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
-								<input type="text" v-model="students[i-1].password" />
 							</td>
 							<td v-bind:class="{tdMiddleBorder: invalidIndexes[i-1]}">
 								<select class="select" v-model="students[i-1].sex">
@@ -84,11 +74,10 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					tableNames: ["学号", "姓名", "密码", "性别", "专业", "年级", "班级", "操作"],
+					tableNames: ["学号", "姓名", "性别", "专业", "年级", "班级", "操作"],
 					students: [{
 						studentNo: "",
 						studentName: "",
-						password: "",
 						sex: "男",
 						major: "",
 						grade: "",
@@ -145,7 +134,6 @@
 						this.students.push({
 							studentNo: "",
 							studentName: "",
-							password: "",
 							sex: "男",
 							major: "",
 							grade: "",

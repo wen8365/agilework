@@ -46,6 +46,9 @@ public class StudentService {
     @Value("${user.status.deleted}")
     private int delStatus;
 
+    @Value("${user.default.password}")
+    private String defaultPasswd;
+
     public Tuple<ErrorCode, String> importStudents(List<StudentInfo> studentInfoList) {
         List<Student> students = new ArrayList<>();
         convertToStudents(studentInfoList, students);
@@ -56,7 +59,7 @@ public class StudentService {
             String cause = Objects.requireNonNull(e.getRootCause()).toString();
             SLogger.error(TAG, "import students ERROR:" + cause);
             int start = cause.indexOf("entry '") + 7;
-            int end = cause.indexOf("' for key");
+            int end = cause.indexOf("' for key") - 2;
             String duplicateNo = start > -1 && end > -1 && start < end ? cause.substring(start, end) : "";
             return new Tuple<>(ErrorCode.STUDENT_IMPORT_USER_ALREADY_EXISTS, duplicateNo);
         }
@@ -66,7 +69,9 @@ public class StudentService {
 
     private void convertToStudents(List<StudentInfo> studentInfoList, List<Student> students) {
         for (StudentInfo studentInfo : studentInfoList) {
-            students.add(new Student(studentInfo));
+            Student student = new Student(studentInfo);
+            student.setPassword(defaultPasswd);
+            students.add(student);
         }
     }
 

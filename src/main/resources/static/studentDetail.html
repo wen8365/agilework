@@ -8,28 +8,24 @@
 				padding: 80px 80px 0px !important;
 			}
 		</style>
-		<!-- common -->
-		<link rel="stylesheet" href="css/common.css" />
-		<script type="text/javascript" src="js/common.js" ></script>
-		<!-- Vue -->
-		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
-		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
-		<!--Font Awesome-->
-    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+		<script src="js/dependencies.js"></script>
 	</head>
 	<body>
 		<div id="app">
 			<div class="subPageBox">
 				<table class="detailTable">
-					<th scope="col" style="text-align: left"><h1>学生详情</h1></th>
 					<tbody>
 						<tr>
+							<th scope="col" style="text-align: left">
+								<h1>学生详情
+									<i v-if="edited" class="fa fa-save" v-on:click="studentSave()"></i>
+									<i v-if="edited" class="fa fa-close" v-on:click="cancelEdit()"></i>
+									<i v-else class="fa fa-edit" v-on:click="studentUpdate()"></i>
+								</h1>
+							</th>
+						</tr>
+						<tr>
 							<td class="info">
-								<div>
-									<h1>学生详情</h1>
-									<i v-if="!edited" class="fa fa-edit" v-on:click="studentUpdate()"></i>
-									<i v-else class="fa fa-save" v-on:click="studentSave()"></i>
-								</div>
 								<h2>
 									<span>姓名：</span>
 									<span>{{student.studentName}}</span>
@@ -61,7 +57,7 @@
 								</h2>
 							</td>
 							<td>
-								<h1>课程表</h1>
+								<h1>课程表  <a href="CoursesPage.html">选课</a></h1>
 								<table class="table">
 									<thead>
 										<tr>
@@ -143,29 +139,7 @@
 		        		number: 1,
 		        		size: 6,
 		        		totalPages: 10,
-		        		content: [
-		        			{
-								courseNo: "ASD",
-								courseName: "敏捷软件开发",
-								courseArrangement: "1~18周",
-								classTime: "周三 2~4节",
-								classPlace: "费 812"
-							},
-							{
-								courseNo: "ASD",
-								courseName: "敏捷软件开发",
-								courseArrangement: "1~18周",
-								classTime: "周三 2~4节",
-								classPlace: "费 812"
-							},
-							{
-								courseNo: "ASD",
-								courseName: "敏捷软件开发",
-								courseArrangement: "1~18周",
-								classTime: "周三 2~4节",
-								classPlace: "费 812"
-							}
-		        		]
+		        		content: []
 		        	},
 					urls: [
 						'studentQuery',
@@ -212,13 +186,13 @@
 		                	case 0:
 		                		alert("保存成功！");
 		                		v.edited=false;
+		                		v.studentSelect();
 		                		break;
 		                	case 1304:
 		                		alert("学生记录不存在！");
 		                		break;
 		                	case 1305:
 		                		alert("没有权限（只能由管理员执行此操作）！");
-		                		parent.location.href="login.html";
 		                		break;
 		                	case 1306:
 		                		alert("更新的信息有误！");
@@ -227,6 +201,9 @@
 		                		alert("保存失败！");
 		                	}
 		                });
+					},
+					cancelEdit: function() {
+						this.edited=false;
 					},
 					doSearch: function(number) {
 						var jsonData={

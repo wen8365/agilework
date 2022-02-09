@@ -42,12 +42,7 @@
 		<!-- common.css -->
 		<link rel="stylesheet" href="css/common.css" />
 		<!-- Vue -->
-		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"
-				integrity="sha384-M5+vdn0ZJoRfNHbhVIuvYmIj44NZOP255FJMIWB9bzTbHEzWjE7fBh+rP+fwJ0OA"
-				crossorigin="anonymous"></script>
-		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"
-				integrity="sha384-hLzbDCl8NQhPSM4RaGXpfed+ihkiZc6a3yUwVFeTEtwnzeAFh80h/h5ouVI2M2HG"
-				crossorigin="anonymous"></script>
+		<script src="js/vue.js"></script>
 	</head>
 	<body>
 		<div id="app">
@@ -94,7 +89,8 @@
 					userName: '',
 					password: '',
 					urls: [
-						'login'
+						'login',
+						'isLogin'
 					]
 				},
 				methods: {
@@ -129,6 +125,7 @@
 			                		} else {
 			                			sessionStorage.setItem("sessionId", loginResp.sessionId);
 			                			sessionStorage.setItem("role", loginResp.role);
+			                			sessionStorage.setItem("studentNo", this.userName);
 			                			location.href="homePage.html";
 			                		}
 			                		break;
@@ -151,7 +148,26 @@
 					},
 					doRegister: function() {
 						location.href="register.html";
+					},
+					checkLogin: function() {
+						this.$http.get(this.urls[1], {
+							headers: {
+								sessionId: sessionStorage.getItem("sessionId")
+							}
+						}).then(res => {
+								console.log(res);
+								var loginResp = res.body;
+								if (loginResp.errCode == 0) {
+									location.href="homePage.html";
+								}
+							}, errorRes => {
+								console.log(errorRes);
+							}
+						);
 					}
+				},
+				mounted() {
+					this.checkLogin();
 				}
 			});
 		</script>
