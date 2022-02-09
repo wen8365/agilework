@@ -82,7 +82,8 @@
 							</td>
 							<td style="width: 125px;">
 								<div>
-									<input v-if="role==1" type="button" class="btn" value="发布" v-on:click="publishCourse(i-1)"/>
+									<input v-if="role==1&&!page.content[i-1].published" type="button" class="btn" value="发布" v-on:click="publishCourse(i-1)"/>
+									<input v-if="role==1&&page.content[i-1].published" type="button" class="btn" value="撤销" v-on:click="publishCourse(i-1)"/>
 									<input type="button" class="btn" value="删除" v-on:click="courseDelete(i-1)"/>
 								</div>
 							</td>
@@ -153,13 +154,14 @@
 					publishCourse: function(n) {
 						var jsonData={
 							courseNo: this.page.content[n].courseNo,
-							published: this.page.content[n].published?1:0
+							published: this.page.content[n].published?0:1
 						};
 						console.log(jsonData);
 						//发送 post请求
 		                post(this.urls[2], jsonData, function(res) {
 		                	console.log(res);
 		                	alert(res.body.message);
+		                	v.doSearch(1);
 		                });
 					},
 					importCourse: function() {

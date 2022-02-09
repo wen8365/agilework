@@ -57,11 +57,7 @@ public class CourseService {
             SLogger.info(TAG,"start delete course,courseNo="+courseNo);
             courseRepository.deleteCourseByCourseNo(courseNo);
             Course course1=courseRepository.findByCourseNo(courseNo);
-            if(course1==null){
-                return true;
-            }else{
-                return false;
-            }
+            return course1 == null;
         }
     }
     public boolean addCourses(List<Course>list){
@@ -70,28 +66,16 @@ public class CourseService {
     }
     public boolean changeCourseStatues(String courseNo,int published){
         int res=courseRepository.changeCourseStatus(courseNo,published);
-        if(res>0){
-            return true;
-        }else{
-            return false;
-        }
+        return res > 0;
     }
     public boolean addElectCourseRecord(List<StudentCourseRelationship>list){
-        List res=stuCourseRelationshipRepository.saveAll(list);
-        if(res.size()==list.size()){
-            return true;
-        }else{
-            return false;
-        }
+        List<StudentCourseRelationship> res=stuCourseRelationshipRepository.saveAll(list);
+        return res.size() == list.size();
     }
 
     public boolean deleteCourseRecords(String studentNo,List<String>courseNos){
         int res=stuCourseRelationshipRepository.deleteCourseRecords(studentNo,courseNos);
-        if(res>0){
-            return true;
-        }else{
-            return false;
-        }
+        return res > 0;
     }
     public List<Course>queryCourseRecords(String studentNo){
         List<String>courseNos=stuCourseRelationshipRepository.findByStudentNo(studentNo);
