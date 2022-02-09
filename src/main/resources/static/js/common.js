@@ -6,6 +6,17 @@ function checkAll() {
 		checkboxs[i].checked=checked;
 	}
 }
+// 获取已选的复选框序号
+function getCheckedIndexes() {
+	var checkedIndexes=[];
+	var checkboxs=document.getElementsByName("checkbox");
+	for(var i=1; i<checkboxs.length; i++) {
+		if(checkboxs[i].checked) {
+			checkedIndexes.push(i-1);
+		}
+	}
+	return checkedIndexes;
+}
 // 判断是否登录
 if(!sessionStorage.getItem("sessionId")) {
 	parent.location.href="login.html"
