@@ -15,19 +15,14 @@
     			height: 25px !important;
 			}
 		</style>
-		<!-- common -->
-		<link rel="stylesheet" href="css/common.css" />
-		<script type="text/javascript" src="js/common.js" ></script>
-		<!-- Vue -->
-		<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
-		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
-		<!--Font Awesome-->
-    	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+		<script src="js/dependencies.js"></script>
 	</head>
 	<body>
 		<div id="app">
 			<div class="subPageBox">
 				<input v-if="role==1" type="button" class="btn" value="导入课程" v-on:click="importCourse()" /><br /><br />
+				<input v-if="role==0" type="button" class="btn" value="选课" v-on:click="coursesPick()"/>
+				<input v-if="role==0" type="button" class="btn" value="退课" v-on:click="coursesWithdraw()"/>
 				<div class="operator">
 					<select class="select" v-model="condition">
 						<option value="筛选">筛选</option>
@@ -89,8 +84,9 @@
 							</td>
 							<td style="width: 125px;">
 								<div>
-									<input v-if="role==1" type="button" class="btn" value="发布" v-on:click="publishCourse(i-1)"/>
-									<input type="button" class="btn" value="删除" v-on:click="courseDelete(i-1)"/>
+									<input v-if="role==1&&!page.content[i-1].published" type="button" class="btn" value="发布" v-on:click="publishCourse(i-1)"/>
+									<input v-if="role==1&&page.content[i-1].published" type="button" class="btn" value="撤销" v-on:click="publishCourse(i-1)"/>
+									<input v-if="role==1" type="button" class="btn" value="删除" v-on:click="courseDelete(i-1)"/>
 								</div>
 							</td>
 						</tr>
@@ -119,6 +115,7 @@
 					condition: "筛选",
 					searchText: "",
 					role: 0,
+					studentNo: "",
 					page: {
 		        		number: 1,
 		        		size: 6,
@@ -128,7 +125,9 @@
 					urls: [
 						'queryCourses',
 						'deleteCourseByCourseNo',
-						'changeCourseStatues'
+						'changeCourseStatues',
+						'insertStuCourseRecords',
+						'deleteStuCourseRecords'
 					]
 				},
 				methods: {
@@ -160,13 +159,14 @@
 					publishCourse: function(n) {
 						var jsonData={
 							courseNo: this.page.content[n].courseNo,
-							published: this.page.content[n].published?1:0
+							published: this.page.content[n].published?0:1
 						};
 						console.log(jsonData);
 						//发送 post请求
 		                post(this.urls[2], jsonData, function(res) {
 		                	console.log(res);
 		                	alert(res.body.message);
+		                	v.doSearch(1);
 		                });
 					},
 					importCourse: function() {
@@ -175,11 +175,50 @@
 					seeCourse: function(courseNo) {
 						sessionStorage.setItem("courseNo", courseNo);
 						location.href="CourseDetails.html";
+					},
+					coursesPick: function() {
+						var checkedIndexes=getCheckedIndexes();
+						var studentCourses=[];
+						for(var i=0; i<checkedIndexes.length; i++) {
+							studentCourses.push({
+								studentNo: this.studentNo,
+								courseNo: this.page.content[checkedIndexes[i]].courseNo,
+								electiveTime: new Date() 
+							});
+						}
+						console.log(studentCourses);
+						
+						if(checkedIndexes.length==0) {
+							alert("未选择学生！");
+						} else {
+							post(this.urls[3], JSON.stringify(studentCourses), res => {
+								console.log(res);
+								alert(res.body.message);
+							});
+						}
+					},
+					coursesWithdraw: function() {
+						var checkedIndexes=getCheckedIndexes();
+						var courseNoList=[];
+						for(var i=0; i<checkedIndexes.length; i++) {
+							courseNoList.push(this.page.content[checkedIndexes[i]].courseNo);
+						}
+						console.log(courseNoList);
+						
+						if(checkedIndexes.length==0) {
+							alert("未选择学生！");
+						} else {
+							post(this.urls[4], JSON.stringify(courseNoList), res => {
+								console.log(res);
+								alert(res.body.message);
+							});
+						}
 					}
 				},
 				mounted() {
 					parent.homePage.innerText="SIMS课程列表";
 					this.role=sessionStorage.getItem("role");
+					this.studentNo=sessionStorage.getItem("studentNo");
 					this.doSearch(1);
 				}
 			});
