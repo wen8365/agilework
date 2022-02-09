@@ -2,10 +2,20 @@
 <html lang="zh">
 	<head>
 		<meta charset="UTF-8">
-		<title>SIMS学生详情</title>
+		<title>SIMS课程详情</title>
 		<style>
 			.subPageBox {
 				padding: 80px 80px 0px !important;
+			}
+			.studentGradeImport {
+				display:inline-block;
+				text-decoration: underline;
+			}
+			.info input[type="radio"] {
+				height: 20px !important;
+			}
+			.info input[type="datetime-local"] {
+				width: 170px !important;
 			}
 		</style>
 		<!-- common -->
@@ -21,16 +31,59 @@
 		<div id="app">
 			<div class="subPageBox">
 				<table class="detailTable">
-					<th scope="col" style="text-align: left"><h1>课程详情</h1></th>
+					<th scope="col" style="text-align: left">
+						<h1>
+						 	<span>课程详情</span>
+						 	<i v-if="role==1&&!edited" class="fa fa-edit" v-on:click="courseUpdate()"></i>
+							<i v-if="role==1&&edited" class="fa fa-save" v-on:click="courseSave()"></i>
+						</h1>
+					</th>
 					<tbody>
 						<tr>
 							<td class="info">
-								<h2>课程号：{{student.studentName}}</h2>
-								<h2>课程名：{{student.studentNo}}</h2>
-								<h2>所属专业：{{student.major}}</h2>
-								<h2>发布状态：{{student.grade}}</h2>
-								<h2>课程安排：{{student.class}}</h2>
-                                <h2>上课时间：{{student.time}}</h2>
+								<h2>
+									<span>课程编号：</span>
+									<span>{{course.courseCode}}</span>
+								</h2>
+								<h2>
+									<span>课程名：</span>
+									<span>{{course.courseName}}</span>
+								</h2>
+								<h2>
+									<span>所属专业：</span>
+									<span v-if="edited">
+										<input type="text" v-model="newCourse.major" />
+									</span>
+									<span v-else>{{course.major}}</span>
+								</h2>
+								<h2>
+									<span>发布状态：</span>
+									<span v-if="edited">
+										<input type="radio" v-bind:checked="newCourse.published" v-on:click="changeRadio()"/>
+									</span>
+									<span v-else>{{course.published?"已发布":"未发布"}}</span>
+								</h2>
+								<h2>
+									<span>考试时间：</span>
+									<span v-if="edited">
+										<input type="datetime-local" v-model="newCourse.examTime" />
+									</span>
+									<span v-else>{{course.examTime}}</span>
+								</h2>
+								<h2>
+									<span>考试时长：</span>
+									<span v-if="edited">
+										<input type="number" v-model="newCourse.examDuration" />小时
+									</span>
+									<span v-else>{{course.examDuration}}小时</span>
+								</h2>
+								<h2>
+									<span>考试地点：</span>
+									<span v-if="edited">
+										<input type="text" v-model="newCourse.examAddr" />
+									</span>
+									<span v-else>{{course.examAddr}}</span>
+								</h2>
 							</td>
 							<td>
 								<h2>课程学生</h2>
@@ -50,19 +103,19 @@
 										</tr>
 										<tr v-for="i in page.content.length">
 											<td>
-												{{page.content[i-1].courseNo}}
+												{{page.content[i-1].studentNo}}
 											</td>
 											<td>
-												{{page.content[i-1].courseName}}
+												{{page.content[i-1].studentName}}
 											</td>
 											<td>
-												{{page.content[i-1].courseArrangement}}
+												{{page.content[i-1].major}}
 											</td>
 											<td>
-												{{page.content[i-1].classTime}}
+												{{page.content[i-1].grade}}
 											</td>
 											<td>
-												{{page.content[i-1].classPlace}}
+												{{page.content[i-1].class}}
 											</td>
 										</tr>
 									</tbody>
@@ -81,7 +134,12 @@
 									<a v-on:click="doSearch(page.totalPages)">&gt;&gt;</a>
 								</div>
 							</td>
-							<td></td>
+							<td>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<a v-if="role==1" href="#" onclick="alert('敬请期待！')">
+									<h2 class="studentGradeImport">学生成绩导入</h2>
+								</a>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -92,86 +150,93 @@
 				el: '#app',
 				data: {
 					tableNames: ["学号", "姓名", "专业", "年级", "班级"],
-					student: {
-						studentNo: "敏捷软件开发",
-						studentName: "ASD",
-						sex: "男",
-						major: "软件工程",
-						grade: "已发布",
-						class: "1-18周",
-                        time:"周三2-4节"
+					course: {
+						courseNo: "",
+						courseCode: "",
+						courseName: "",
+						major: "",
+						published: false,
+						examTime: "",
+						examDuration: "",
+						examAddr: ""
 					},
+					newCourse: {
+						courseNo: "",
+						courseCode: "",
+						courseName: "",
+						major: "",
+						published: false,
+						examTime: "",
+						examDuration: "",
+						examAddr: ""
+					},
+					role: 0,
+					courseNo: "",
+					edited: false,
 					page: {
 		        		number: 1,
 		        		size: 6,
 		        		totalPages: 10,
 		        		content: [
 		        			{
-								courseNo: "MF12345678",
-								courseName: "张三",
-								courseArrangement: "软件工程",
-								classTime: "2021级",
-								classPlace: "1班"
+		        				studentNo: "MF12345678",
+								studentName: "张三",
+								major: "软件工程",
+								grade: 2021,
+								class: 1
 							},
 							{
-								courseNo: "",
-								courseName: "",
-								courseArrangement: "",
-								classTime: "",
-								classPlace: ""
+								studentNo: "MF12345678",
+								studentName: "张三",
+								major: "软件工程",
+								grade: 2021,
+								class: 1
 							},
 							{
-								courseNo: "",
-								courseName: "",
-								courseArrangement: "",
-								classTime: "",
-								classPlace: ""
-							},
-                            {
-								courseNo: "",
-								courseName: "",
-								courseArrangement: "",
-								classTime: "",
-								classPlace: ""
-							},
-                            {
-								courseNo: "",
-								courseName: "",
-								courseArrangement: "",
-								classTime: "",
-								classPlace: ""
-							},
-                            {
-								courseNo: "",
-								courseName: "",
-								courseArrangement: "",
-								classTime: "",
-								classPlace: ""
-							},
-                            {
-								courseNo: "",
-								courseName: "",
-								courseArrangement: "",
-								classTime: "",
-								classPlace: ""
+								studentNo: "MF12345678",
+								studentName: "张三",
+								major: "软件工程",
+								grade: 2021,
+								class: 1
 							}
-                            
 		        		]
 		        	},
 					urls: [
-						''
+						'findCourse',
+						'updateCourse'
 					]
 				},
 				methods: {
-					studentSelect: function() {
+					courseSelect: function() {
 						var jsonData={};
+		                //发送 get请求
+		                get(this.urls[0]+"?courseNo="+this.courseNo, function(res) {
+		                	console.log(res);
+		                	v.course=res.body;
+		                });
+					},
+					courseUpdate: function() {
+						this.edited=true;
+						this.newCourse=JSON.parse(JSON.stringify(this.course));
+						this.newCourse.examTime=this.newCourse.examTime.substring(0, 19);
+					},
+					courseSave: function() {
+						var jsonData=this.newCourse;
+						jsonData.published=jsonData.published?1:0
+						jsonData.examDuration=parseInt(jsonData.examDuration);
+						jsonData.examTime=getDate(jsonData.examTime);
+						console.log(jsonData);
 		                //发送 post请求
-		                this.$http.post(this.urls[0], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.student=res.body;
-		                },function(res){
-		                    console.log(res);
+		                post(this.urls[1], jsonData, function(res) {
+		                	console.log(res);
+		                	var course=res.body;
+		                	if(course!=null) {
+		                		alert("保存成功！");
+		                		v.course=course;
+		                		v.edited=false;
+		                	} else {
+		                		alert("保存失败！");
+		                	}
 		                });
 					},
 					doSearch: function(number) {
@@ -188,10 +253,15 @@
 		                    console.log(res);
 		                });
 					},
+					changeRadio: function() {
+						this.$set(this.newCourse, "published", !this.newCourse.published);
+					}
 				},
 				mounted() {
-					parent.homePage.innerText="SIMS学生详情";
-					this.studentSelect();
+					parent.homePage.innerText="SIMS课程详情";
+					this.role=sessionStorage.getItem("role");
+					this.courseNo=sessionStorage.getItem("courseNo");
+					this.courseSelect();
 					this.doSearch(1);
 				}
 			});

@@ -7,14 +7,12 @@
 			.operator {
 				margin-left: 4%;
 			}
-			td {
-				width: 16%;
-				border: 1px darkgrey solid;
-				padding: 10px;
-			}
 			.checkboxTd {
 				width: 4%;
-				border: 0px;
+			}
+			td .btn {
+				width: 50px !important;
+    			height: 25px !important;
 			}
 		</style>
 		<!-- common -->
@@ -29,7 +27,7 @@
 	<body>
 		<div id="app">
 			<div class="subPageBox">
-				<input type="button" class="btn" value="查看我的课程" /><br /><br />
+				<input v-if="role==1" type="button" class="btn" value="导入课程" v-on:click="importCourse()" /><br /><br />
 				<div class="operator">
 					<select class="select" v-model="condition">
 						<option value="筛选">筛选</option>
@@ -47,7 +45,7 @@
 							<td class="checkboxTd">
 								<input type="checkbox" name="checkbox" onclick="checkAll()"/>
 							</td>
-							<td v-for="i in tableNames.length">
+							<td v-for="i in tableNames.length" v-if="!(role==0&&tableNames[i-1]=='发布状态')">
 								{{tableNames[i-1]}}
 							</td>
 						</tr>
@@ -55,7 +53,7 @@
 					<tbody>
 						<tr>
 							<td class="checkboxTd"></td>
-							<td colspan="6" class="line">
+							<td v-bind:colspan="role==1?tableNames.length:tableNames.length-1" class="line">
 								<hr />
 							</td>
 						</tr>
@@ -64,22 +62,36 @@
 								<input type="checkbox" name="checkbox" />
 							</td>
 							<td>
-								{{page.content[i-1].studentNo}}
+								<a href="" v-on:click.prevent="seeCourse(page.content[i-1].courseNo)">
+									{{page.content[i-1].courseNo}}
+								</a>
 							</td>
 							<td>
-								{{page.content[i-1].studentName}}
+								{{page.content[i-1].courseCode}}
 							</td>
 							<td>
-								{{page.content[i-1].sex}}
+								{{page.content[i-1].courseName}}
 							</td>
 							<td>
 								{{page.content[i-1].major}}
 							</td>
-							<td>
-								{{page.content[i-1].grade}}
+							<td v-if="role==1">
+								{{page.content[i-1].published?"已发布":"未发布"}}
 							</td>
 							<td>
-								{{page.content[i-1].class}}
+								{{page.content[i-1].examTime}}
+							</td>
+							<td>
+								{{page.content[i-1].examDuration}}
+							</td>
+							<td>
+								{{page.content[i-1].examAddr}}
+							</td>
+							<td style="width: 125px;">
+								<div>
+									<input v-if="role==1" type="button" class="btn" value="发布" v-on:click="publishCourse(i-1)"/>
+									<input type="button" class="btn" value="删除" v-on:click="courseDelete(i-1)"/>
+								</div>
 							</td>
 						</tr>
 					</tbody>
@@ -103,78 +115,20 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					tableNames: ["课程号", "课程名", "所属专业", "课程安排", "上课时间", "考试时间"],
+					tableNames: ["课程号", "课程代码", "课程名", "所属专业", "发布状态", "考试日期", "考试时长（小时）", "考试地点", "操作"],
 					condition: "筛选",
 					searchText: "",
+					role: 0,
 					page: {
 		        		number: 1,
 		        		size: 6,
 		        		totalPages: 10,
-		        		content: [
-		        			{
-								id: 0,
-								studentNo: "ASD",
-								studentName: "敏捷软件开发",
-								sex: "软件工程",
-								major: "1-18周",
-								grade: "周三2-4节",
-								class: " ",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "ASD",
-								studentName: "敏捷软件开发",
-								sex: "软件工程",
-								major: "1-18周",
-								grade: "周三2-4节",
-								class: " ",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "ASD",
-								studentName: "敏捷软件开发",
-								sex: "软件工程",
-								major: "1-18周",
-								grade: "周三2-4节",
-								class: " ",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "ASD",
-								studentName: "敏捷软件开发",
-								sex: "软件工程",
-								major: "1-18周",
-								grade: "周三2-4节",
-								class: " ",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "ASD",
-								studentName: "敏捷软件开发",
-								sex: "软件工程",
-								major: "1-18周",
-								grade: "周三2-4节",
-								class: " ",
-								status: 0
-							},
-							{
-								id: 0,
-								studentNo: "ASD",
-								studentName: "敏捷软件开发",
-								sex: "软件工程",
-								major: "1-18周",
-								grade: "周三2-4节",
-								class: " ",
-								status: 0
-							}
-		        		]
+		        		content: []
 		        	},
 					urls: [
-						''
+						'queryCourses',
+						'deleteCourseByCourseNo',
+						'changeCourseStatues'
 					]
 				},
 				methods: {
@@ -184,18 +138,48 @@
 							number: this.page.number,
 		        			size: this.page.size
 						};
-		                //发送 post请求
-		                this.$http.post(this.urls[0], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.page=res.body;
-		                },function(res){
-		                    console.log(res);
+		                //发送 get请求
+		                get(this.urls[0], function(res) {
+		                	v.page.content=res.body;
 		                });
 					},
+					courseDelete: function(n) {
+						var courseNo=this.page.content[n].courseNo;
+						if(confirm("确认删除课程编号为"+courseNo+"的课程吗？")) {
+							var jsonData={
+								courseNo: courseNo
+							};
+							console.log(jsonData);
+							//发送 post请求
+			                post(this.urls[1], jsonData, function(res) {
+			                	console.log(res);
+			                	alert(res.body.message);
+			                });
+						}
+					},
+					publishCourse: function(n) {
+						var jsonData={
+							courseNo: this.page.content[n].courseNo,
+							published: this.page.content[n].published?1:0
+						};
+						console.log(jsonData);
+						//发送 post请求
+		                post(this.urls[2], jsonData, function(res) {
+		                	console.log(res);
+		                	alert(res.body.message);
+		                });
+					},
+					importCourse: function() {
+						location.href="importCourse.html";
+					},
+					seeCourse: function(courseNo) {
+						sessionStorage.setItem("courseNo", courseNo);
+						location.href="CourseDetails.html";
+					}
 				},
 				mounted() {
-					parent.homePage.innerText="SIMS学生列表";
+					parent.homePage.innerText="SIMS课程列表";
+					this.role=sessionStorage.getItem("role");
 					this.doSearch(1);
 				}
 			});

@@ -42,3 +42,13 @@ function get(url, fun) {
 	    console.log(res);
 	});
 }
+// 字符串转Date对象
+function getDate(str) {
+	var year=str.substring(0, 4);
+	var month=str.substring(5, 7);
+	var day=str.substring(8, 10);
+	var hour=str.substring(11, 13);
+	var minute=str.substring(14, 16);
+	var second=str.substring(17, 19);
+	return new Date(year, month-1, day, hour, minute, second);
+}
