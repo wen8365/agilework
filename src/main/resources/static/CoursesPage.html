@@ -115,6 +115,7 @@
 					condition: "筛选",
 					searchText: "",
 					role: 0,
+					studentNo: "",
 					page: {
 		        		number: 1,
 		        		size: 6,
@@ -177,14 +178,22 @@
 					},
 					coursesPick: function() {
 						var checkedIndexes=getCheckedIndexes();
-						var courseList=[];
+						var studentCourses=[];
 						for(var i=0; i<checkedIndexes.length; i++) {
-
+							studentCourses.push({
+								studentNo: this.studentNo,
+								courseNo: this.page.content[checkedIndexes[i]].courseNo,
+								electiveTime: new Date() 
+							});
 						}
+						console.log(studentCourses);
+						
 						if(checkedIndexes.length==0) {
 							alert("未选择学生！");
 						} else {
-							post(this.urls[3], res => {
+							post(this.urls[3], JSON.stringify(studentCourses), res => {
+								console.log(res);
+								alert(res.body.message);
 							});
 						}
 					},
@@ -194,11 +203,14 @@
 						for(var i=0; i<checkedIndexes.length; i++) {
 							courseNoList.push(this.page.content[checkedIndexes[i]].courseNo);
 						}
+						console.log(courseNoList);
+						
 						if(checkedIndexes.length==0) {
 							alert("未选择学生！");
 						} else {
 							post(this.urls[4], JSON.stringify(courseNoList), res => {
-
+								console.log(res);
+								alert(res.body.message);
 							});
 						}
 					}
@@ -206,6 +218,7 @@
 				mounted() {
 					parent.homePage.innerText="SIMS课程列表";
 					this.role=sessionStorage.getItem("role");
+					this.studentNo=sessionStorage.getItem("studentNo");
 					this.doSearch(1);
 				}
 			});
