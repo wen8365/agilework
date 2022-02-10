@@ -57,7 +57,7 @@
 								</h2>
 							</td>
 							<td>
-								<h1>课程表  <a href="CoursesPage.html">选课</a></h1>
+								<h1>课程表  <input v-if="role==0" type="button" class="btn" value="选课" v-on:click="gotoCoursesPick()"/></h1>
 								<table class="table">
 									<thead>
 										<tr>
@@ -225,6 +225,9 @@
 							console.log(res);
 							v.page.content=res.body;
 						});
+					},
+					gotoCoursesPick: function() {
+						parent.location.href="CoursesPage.html";
 					}
 				},
 				mounted() {
