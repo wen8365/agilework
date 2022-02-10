@@ -22,11 +22,12 @@ public class CourseControllerTest {
     private CourseController courseController;
     @Autowired
     private LoginController loginController;
+    private static final String USER_NAME = "MF21320138";
     private static final String P = "Abc123456=";
     @Test
     public void testQueryCourses(){
         //student account
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         List<Course>list=courseController.queryCourses(sessionId);
@@ -41,7 +42,7 @@ public class CourseControllerTest {
     @Test
     public void testFindCourse(){
         //student account
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         Course course=courseController.findCourse(sessionId,"202205");
@@ -74,7 +75,7 @@ public class CourseControllerTest {
     }
     @Test
     public void testChangeCourseStats(){
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         Map<String, Object>map=courseController.changeCourseStatus("202201",1);
@@ -86,11 +87,11 @@ public class CourseControllerTest {
         List<StudentCourseRelationship>list=new ArrayList<>();
         StudentCourseRelationship sc1=new StudentCourseRelationship();
         sc1.setCourseNo("212201");
-        sc1.setStudentNo("MF21320138");
+        sc1.setStudentNo(USER_NAME);
         sc1.setElectiveTime(new Date());
         StudentCourseRelationship sc2=new StudentCourseRelationship();
         sc2.setCourseNo("212205");
-        sc2.setStudentNo("MF21320138");
+        sc2.setStudentNo(USER_NAME);
         sc2.setElectiveTime(new Date());
         list.add(sc1);
         list.add(sc2);
@@ -99,7 +100,7 @@ public class CourseControllerTest {
     }
     @Test
     public void testQueryCourseRecord(){
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         List<Course>res=courseController.queryCourseRecords(sessionId);

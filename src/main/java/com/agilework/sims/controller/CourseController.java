@@ -90,15 +90,13 @@ public class CourseController {
         Session session = sessionService.getSession(sessionId);
         User user=session.getUser();
         String studentNo=user.getUserNo();
-        List<Course>res=courseService.queryCourseRecords(studentNo);
-        return res;
+        return courseService.queryCourseRecords(studentNo);
     }
 
     @PostMapping("/updateCourse")
     @ResponseBody
     public Course updateCourse(Course course){
-        Course res=courseRepository.save(course);
-        return res;
+        return courseRepository.save(course);
     }
 
     @PostMapping("/deleteCourseByCourseNo")
