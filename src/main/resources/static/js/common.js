@@ -28,12 +28,7 @@ function post(url, jsonData, fun) {
 		headers: {
 			sessionId: sessionStorage.getItem("sessionId")
 		}
-	}).then(fun, function(res){
-	    console.log(res);
-	    if (res.status==403) {
-	        gotoLogin()
-	    }
-	});
+	}).then(fun, handleError(res));
 }
 // 封装Vue的get请求，包含headers
 function get(url, fun) {
@@ -41,12 +36,7 @@ function get(url, fun) {
 		headers: {
 			sessionId: sessionStorage.getItem("sessionId")
 		}
-	}).then(fun, function(res){
-	    console.log(res);
-            if (res.status==403) {
-                gotoLogin()
-            }
-	});
+	}).then(fun, handleError(res));
 }
 // 字符串转Date对象
 function getDate(str) {
@@ -57,6 +47,13 @@ function getDate(str) {
 	var minute=str.substring(14, 16);
 	var second=str.substring(17, 19);
 	return new Date(year, month-1, day, hour, minute, second);
+}
+
+function handleError(res) {
+    console.log(res);
+    if (res.status==403) {
+        gotoLogin()
+    }
 }
 
 function gotoLogin() {
