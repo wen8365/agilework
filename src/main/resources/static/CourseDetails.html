@@ -216,13 +216,10 @@
 						this.edited=false;
 					},
 					doSearch: function(number) {
-						var jsonData={
-							number: number-1,
-		        			size: this.page.size,
-		        			courseNo: this.courseNo
-						};
-		                //发送 post请求
-		                post(this.urls[2], JSON.stringify(jsonData), res => {
+		                var url = this.urls[2] + "?courseNo=" + this.courseNo
+						                       + "&number=" + (number - 1)
+						                       + "&size=" + this.page.size;
+		                get(url, res => {
 		                	v.page=res.body;
 		                	v.page.number=v.page.number+1;
 		                });

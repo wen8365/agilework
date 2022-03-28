@@ -207,23 +207,12 @@
 						this.edited=false;
 					},
 					doSearch: function(number) {
-						var jsonData={
-							number: number,
-		        			size: this.page.size
-						};
-		                //发送 post请求
-		                this.$http.post(this.urls[1], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.page=res.body;
-		                },function(res){
-		                    console.log(res);
-		                });
-					},
-					courseRecordsSearch: function() {
-						get(this.urls[2]+"?studentNo="+this.studentNo, res => {
-							console.log(res);
-							v.page.content=res.body;
+						var url = this.urls[2] + "?studentNo=" + this.studentNo
+						                       + "&number=" + (number - 1)
+						                       + "&size=" + this.page.size;
+		                get(url, res => {
+							v.page=res.body;
+		                	v.page.number=v.page.number+1;
 						});
 					},
 					gotoCoursesPick: function() {
@@ -235,8 +224,7 @@
 					this.studentNo=sessionStorage.getItem("studentNo");
 					this.role=sessionStorage.getItem("role");
 					this.studentSelect();
-					this.courseRecordsSearch();
-					//this.doSearch(1);
+					this.doSearch(1);
 				}
 			});
 		</script>

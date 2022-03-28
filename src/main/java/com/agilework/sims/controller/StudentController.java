@@ -135,10 +135,12 @@ public class StudentController {
         return studentService.queryStudents(studentInfo, req.getCurPage(), req.getPageSize());
     }
 
-    @PostMapping("/courseStudentQuery")
-    public Page<StudentV> courseStudentsQuery(@RequestBody CourseStudentReq req) {
-        SLogger.info(TAG, "query students with courses, courseNo=" + req.getCourseNo());
-        return studentService.queryStudentByCourse(req.getCourseNo(), req.getCurPage(), req.getPageSize());
+    @GetMapping("/courseStudentQuery")
+    public Page<StudentV> courseStudentsQuery(@RequestParam("courseNo") String courseNo,
+                                              @RequestParam("number") int number,
+                                              @RequestParam("size") int size) {
+        SLogger.info(TAG, "query students with courses, courseNo=" + courseNo);
+        return studentService.queryStudentByCourse(courseNo, number, size);
     }
 
     @PostMapping("/studentUpdate")
@@ -174,7 +176,7 @@ public class StudentController {
 
     @PostMapping("/studentBatchUpdate")
     public StudentsUpdateResp studentsUpdate(@RequestHeader("sessionId") String sessionId,
-                                  @RequestBody @NonNull StudentsImportReq req) {
+                                             @RequestBody @NonNull StudentsImportReq req) {
         SLogger.info(TAG, "update multiple students, sessionId=" + sessionId);
         Session session = sessionService.getSession(sessionId);
         User user = session.getUser();
@@ -224,9 +226,9 @@ public class StudentController {
         resp.setRows(rows);
         return resp;
     }
-    
+
     @PostMapping("/studentConditionSelect")
     public Map<String, List<?>> studentConditionSelect() {
-    	return studentService.studentConditionSelect();
+        return studentService.studentConditionSelect();
     }
 }

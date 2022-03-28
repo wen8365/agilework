@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -107,8 +108,8 @@ public class CourseControllerTest {
         LoginReq req = new LoginReq(USER_NAME_1, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
-        List<Course>res=courseController.queryCourseRecords(sessionId, USER_NAME_1);
-        Assertions.assertEquals(res.size(),2);
+        Page<Course> res=courseController.queryCourseRecords(USER_NAME_1, 0, 10);
+        Assertions.assertEquals(res.getTotalElements(),2);
     }
     @Test
     public void testUpdateCourse(){

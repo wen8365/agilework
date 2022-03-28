@@ -9,6 +9,7 @@ import com.agilework.sims.service.CourseService;
 import com.agilework.sims.service.SessionService;
 import com.agilework.sims.util.SLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
@@ -85,10 +86,11 @@ public class CourseController {
     }
     @GetMapping("/queryCourseRecords")
     @ResponseBody
-    public List<Course>queryCourseRecords(@RequestHeader("sessionId")String sessionId,
-                                          @RequestParam("studentNo") String studentNo) {
-        SLogger.info(TAG, "query course records, sessionId=" + sessionId + ", studentNo=" + studentNo);
-        return courseService.queryCourseRecords(studentNo);
+    public Page<Course> queryCourseRecords(@RequestParam("studentNo") String studentNo,
+                                           @RequestParam("number") int number,
+                                           @RequestParam("size") int size) {
+        SLogger.info(TAG, "query course records, studentNo=" + studentNo);
+        return courseService.queryCourseRecords(studentNo, number, size);
     }
 
     @PostMapping("/updateCourse")
