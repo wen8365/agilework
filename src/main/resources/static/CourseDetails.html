@@ -29,6 +29,7 @@
 						 	<span>课程详情</span>
 						 	<i v-if="role==1&&!edited" class="fa fa-edit" v-on:click="courseUpdate()"></i>
 							<i v-if="role==1&&edited" class="fa fa-save" v-on:click="courseSave()"></i>
+							<i v-if="role==1&&edited" class="fa fa-close" v-on:click="cancelEdit()"></i>
 						</h1>
 					</th>
 					<tbody>
@@ -174,7 +175,8 @@
 		        	},
 					urls: [
 						'findCourse',
-						'updateCourse'
+						'updateCourse',
+						'courseStudentQuery'
 					]
 				},
 				methods: {
@@ -210,18 +212,19 @@
 		                	}
 		                });
 					},
+					cancelEdit: function() {
+						this.edited=false;
+					},
 					doSearch: function(number) {
 						var jsonData={
-							number: number,
-		        			size: this.page.size
+							number: number-1,
+		        			size: this.page.size,
+		        			courseNo: this.courseNo
 						};
 		                //发送 post请求
-		                this.$http.post(this.urls[1], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.page=res.body;
-		                },function(res){
-		                    console.log(res);
+		                post(this.urls[2], JSON.stringify(jsonData), res => {
+		                	v.page=res.body;
+		                	v.page.number=v.page.number+1;
 		                });
 					},
 					changeRadio: function() {

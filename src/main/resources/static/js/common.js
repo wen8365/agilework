@@ -28,7 +28,7 @@ function post(url, jsonData, fun) {
 		headers: {
 			sessionId: sessionStorage.getItem("sessionId")
 		}
-	}).then(fun, handleError(res));
+	}).then(fun, handleError);
 }
 // 封装Vue的get请求，包含headers
 function get(url, fun) {
@@ -36,7 +36,7 @@ function get(url, fun) {
 		headers: {
 			sessionId: sessionStorage.getItem("sessionId")
 		}
-	}).then(fun, handleError(res));
+	}).then(fun, handleError);
 }
 // 字符串转Date对象
 function getDate(str) {

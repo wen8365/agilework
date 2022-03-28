@@ -135,6 +135,12 @@ public class StudentController {
         return studentService.queryStudents(studentInfo, req.getCurPage(), req.getPageSize());
     }
 
+    @PostMapping("/courseStudentQuery")
+    public Page<StudentV> courseStudentsQuery(@RequestBody CourseStudentReq req) {
+        SLogger.info(TAG, "query students with courses, courseNo=" + req.getCourseNo());
+        return studentService.queryStudentByCourse(req.getCourseNo(), req.getCurPage(), req.getPageSize());
+    }
+
     @PostMapping("/studentUpdate")
     public BaseResp studentUpdate(@RequestHeader("sessionId") String sessionId,
                                   @RequestBody @NonNull StudentUpdateReq req) {

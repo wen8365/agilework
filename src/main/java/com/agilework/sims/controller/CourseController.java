@@ -42,11 +42,10 @@ public class CourseController {
     public Course findCourse(@RequestHeader("sessionId") @NonNull String sessionId, String courseNo){
         Session session = sessionService.getSession(sessionId);
         User user=session.getUser();
+        SLogger.info(TAG, user.getUserNo()+"start query course with courseNo=" + courseNo);
         if(user.getRole()==0){
-            SLogger.info(TAG, user.getUserNo()+"start query course with courseNo=" + courseNo);
             return courseService.findCourseByCourseNoAndPublished(courseNo,1);
         }else{
-            SLogger.info(TAG, user.getUserNo()+"start query course with courseNo=" + courseNo);
             return courseService.findCourseByCourseNo(courseNo);
         }
     }
@@ -86,10 +85,9 @@ public class CourseController {
     }
     @GetMapping("/queryCourseRecords")
     @ResponseBody
-    public List<Course>queryCourseRecords(@RequestHeader("sessionId")String sessionId){
-        Session session = sessionService.getSession(sessionId);
-        User user=session.getUser();
-        String studentNo=user.getUserNo();
+    public List<Course>queryCourseRecords(@RequestHeader("sessionId")String sessionId,
+                                          @RequestParam("studentNo") String studentNo) {
+        SLogger.info(TAG, "query course records, sessionId=" + sessionId + ", studentNo=" + studentNo);
         return courseService.queryCourseRecords(studentNo);
     }
 

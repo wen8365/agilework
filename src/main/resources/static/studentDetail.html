@@ -221,7 +221,7 @@
 		                });
 					},
 					courseRecordsSearch: function() {
-						get(this.urls[2], res => {
+						get(this.urls[2]+"?studentNo="+this.studentNo, res => {
 							console.log(res);
 							v.page.content=res.body;
 						});
