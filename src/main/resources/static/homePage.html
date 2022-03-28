@@ -63,6 +63,8 @@
 							}
 						},function(res){
 						    console.log(res);
+						    sessionStorage.clear();  //非200响应也强制退出登录
+							location.href="login.html";
 						});
 					}
 				},
@@ -73,7 +75,7 @@
 					} else if(sessionStorage.getItem("role")==0) {
 						childPage.src="studentDetail.html";
 					}
-					var userName = sessionStorage.getItem("studentNo");
+					var userName = sessionStorage.getItem("userName");
 					document.getElementById("userNameLabel").innerText=userName;
 				}
 			});

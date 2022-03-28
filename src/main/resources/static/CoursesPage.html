@@ -27,7 +27,7 @@
 					<select class="select" v-model="condition">
 						<option value="筛选">筛选</option>
 						<option value="1">1</option>
-						<option value="2">2</option>					
+						<option value="2">2</option>
 						<option value="3">3</option>
 					</select>
 					<i class="fa fa-filter"></i>
@@ -97,7 +97,7 @@
 					<a v-on:click="doSearch(1)">&lt;&lt;</a>
 					<a v-if="page.number>1" v-on:click="doSearch(page.number-1)">前页</a>
 					<a v-else class="pageDefaultStyle">前页</a>
-					<span v-for="i in page.totalPages" v-bind:class="{'pageActive': i==page.number}" 
+					<span v-for="i in page.totalPages" v-bind:class="{'pageActive': i==page.number}"
 						v-on:click="doSearch(i)">
 						{{i}}
 					</span>
@@ -216,9 +216,10 @@
 					}
 				},
 				mounted() {
-					parent.homePage.innerText="SIMS课程列表";
+					if (parent.homePage)  // 学生登录时没有嵌套页面，homePage元素不存在
+						parent.homePage.innerText="SIMS课程列表";
 					this.role=sessionStorage.getItem("role");
-					this.studentNo=sessionStorage.getItem("studentNo");
+					this.studentNo=sessionStorage.getItem("userName");
 					this.doSearch(1);
 				}
 			});

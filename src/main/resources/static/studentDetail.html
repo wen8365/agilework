@@ -221,7 +221,9 @@
 				},
 				mounted() {
 					parent.homePage.innerText="SIMS学生详情";
-					this.studentNo=sessionStorage.getItem("studentNo");
+					var sno1 = sessionStorage.getItem("userName");
+					var sno2 = sessionStorage.getItem("studentNo");  //从学生管理页面进来后，用选择的学生号覆盖登录账号
+					this.studentNo = sno2 ? sno2 : sno1;
 					this.role=sessionStorage.getItem("role");
 					this.studentSelect();
 					this.doSearch(1);
