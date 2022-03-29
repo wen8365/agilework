@@ -56,10 +56,13 @@
 							<td class="checkboxTd">
 								<input type="checkbox" name="checkbox" />
 							</td>
-							<td>
+							<td v-if="role==1">
 								<a href="" v-on:click.prevent="seeCourse(page.content[i-1].courseNo)">
 									{{page.content[i-1].courseNo}}
 								</a>
+							</td>
+							<td v-else>
+								{{page.content[i-1].courseNo}}
 							</td>
 							<td>
 								{{page.content[i-1].courseCode}}
