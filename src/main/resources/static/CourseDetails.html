@@ -62,7 +62,7 @@
 									<span v-if="edited">
 										<input type="datetime-local" v-model="newCourse.examTime" />
 									</span>
-									<span v-else>{{course.examTime}}</span>
+									<span v-else>{{formatUTCTime(course.examTime)}}</span>
 								</h2>
 								<h2>
 									<span>考试时长：</span>
