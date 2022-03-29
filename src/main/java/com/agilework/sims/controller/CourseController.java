@@ -95,7 +95,7 @@ public class CourseController {
 
     @PostMapping("/updateCourse")
     @ResponseBody
-    public Course updateCourse(Course course){
+    public Course updateCourse(@RequestBody Course course){
         return courseRepository.save(course);
     }
 
