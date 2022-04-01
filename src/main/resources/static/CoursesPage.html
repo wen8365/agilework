@@ -20,7 +20,9 @@
 	<body>
 		<div id="app">
 			<div class="subPageBox">
-				<input v-if="role==1" type="button" class="btn" value="导入课程" v-on:click="importCourse()" /><br /><br />
+				<input v-if="role==1" type="button" class="btn" value="导入课程" v-on:click="importCourse()" />
+				<input v-if="role==1" type="button" class="btn" value="课表设置" v-on:click="schoolTimetableSetting()" />
+				<br /><br />
 				<input v-if="role==0" type="button" class="btn" value="选课" v-on:click="coursesPick()"/>
 				<input v-if="role==0" type="button" class="btn" value="退课" v-on:click="coursesWithdraw()"/>
 				<div class="operator">
@@ -174,6 +176,9 @@
 					},
 					importCourse: function() {
 						location.href="importCourse.html";
+					},
+					schoolTimetableSetting: function() {
+						location.href="schoolTimetableSetting.html";
 					},
 					seeCourse: function(courseNo) {
 						sessionStorage.setItem("courseNo", courseNo);
