@@ -202,3 +202,41 @@ i {
 	color: black;
 	cursor: auto;
 }
+/* visibility */
+.visibility i {
+	visibility: hidden;
+}
+.visibility:hover i {
+	visibility: visible;
+}
+/* el-dialog */
+.el-dialog__body {
+	padding: 10px !important;
+}
+.el-dialog__body div {
+	margin: 5px 0px;
+	text-align: center;
+}
+.el-dialog__body input[type="text"], .el-dialog__body input[type="number"] {
+	width: 200px;
+	height: 25px;
+	padding: 0px 10px;
+	border: 1px darkgrey solid;
+}
+.el-dialog__body select {
+	width: 222.5px;
+	height: 27px;
+	padding: 0px 6px;
+	border: 1px darkgrey solid;
+}
+.dialog-footer input[type="button"] {
+	width: 50px;
+ 			height: 25px;
+	color: white;
+	background-color: deepskyblue;
+	border: 0px;
+}
+.dialog-footer input[type="button"]:hover {
+	background-color: dodgerblue;
+	cursor: pointer;
+}
