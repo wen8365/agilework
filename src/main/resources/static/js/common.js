@@ -28,12 +28,7 @@ function post(url, jsonData, fun) {
 		headers: {
 			sessionId: sessionStorage.getItem("sessionId")
 		}
-	}).then(fun, function(res){
-	    console.log(res);
-	    if (res.status==403) {
-	        gotoLogin()
-	    }
-	});
+	}).then(fun, handleError);
 }
 // 封装Vue的get请求，包含headers
 function get(url, fun) {
@@ -41,26 +36,61 @@ function get(url, fun) {
 		headers: {
 			sessionId: sessionStorage.getItem("sessionId")
 		}
-	}).then(fun, function(res){
-	    console.log(res);
-            if (res.status==403) {
-                gotoLogin()
-            }
-	});
+	}).then(fun, handleError);
 }
 // 字符串转Date对象
 function getDate(str) {
-	var year=str.substring(0, 4);
-	var month=str.substring(5, 7);
-	var day=str.substring(8, 10);
-	var hour=str.substring(11, 13);
-	var minute=str.substring(14, 16);
-	var second=str.substring(17, 19);
-	return new Date(year, month-1, day, hour, minute, second);
+    try {
+        var year=str.substring(0, 4);
+        var month=str.substring(5, 7);
+        var day=str.substring(8, 10);
+        var hour=str.substring(11, 13);
+        var minute=str.substring(14, 16);
+        var second=str.substring(17, 19);
+        return new Date(year, month-1, day, hour, minute, second);
+    } catch (error) {
+        return null;
+    }
+}
+
+function formatUTCTime(t) {
+    if (!t) return null;
+    var date = new Date(t);
+    return date.getFullYear() + "-"
+         + (date.getMonth() + 1) + "-"
+         + (date.getDate() < 10 ? "0" + date.getDate() : date.getDate()) + " "
+         + (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) + ":"
+         + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes());
+}
+
+function handleError(res) {
+    console.log(res);
+    if (res.status==403) {
+        gotoLogin()
+    }
 }
 
 function gotoLogin() {
     sessionStorage.clear();
     alert("用户未登录！");
     parent.location.href="login.html";
+}
+
+// 获取课程表
+function getSchoolTimetable(lessons) {
+	var schoolTimetable=[];
+	for(var i=0; i<7; i++) {
+		schoolTimetable.push([]);
+		for(var j=0; j<11; j++) {
+			schoolTimetable[i].push([]);
+		}
+	}
+	
+	for(var i=0; i<lessons.length; i++) {
+		var dayOfWeek=lessons[i].dayOfWeek;
+		var lessonNo=lessons[i].lessonNo;
+		schoolTimetable[dayOfWeek-1][lessonNo-1].push(lessons[i]);
+	}
+	
+	return schoolTimetable;
 }
