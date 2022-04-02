@@ -145,6 +145,9 @@ i {
 	border-bottom-color: red !important;
 }
 /* 详情表格样式 */
+.detailTable {
+	width: 100%;
+}
 .detailTable td {
 	padding: 10px;
 	vertical-align: top;

@@ -75,3 +75,22 @@ function gotoLogin() {
     alert("用户未登录！");
     parent.location.href="login.html";
 }
+
+// 获取课程表
+function getSchoolTimetable(lessons) {
+	var schoolTimetable=[];
+	for(var i=0; i<7; i++) {
+		schoolTimetable.push([]);
+		for(var j=0; j<11; j++) {
+			schoolTimetable[i].push([]);
+		}
+	}
+	
+	for(var i=0; i<lessons.length; i++) {
+		var dayOfWeek=lessons[i].dayOfWeek;
+		var lessonNo=lessons[i].lessonNo;
+		schoolTimetable[dayOfWeek-1][lessonNo-1].push(lessons[i]);
+	}
+	
+	return schoolTimetable;
+}

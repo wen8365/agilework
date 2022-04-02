@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<title>SIMS成绩查询</title>
+		<style></style>
+		<script src="js/dependencies.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<div class="subPageBox">
+				<table class="table">
+					<thead>
+						<tr>
+							<td v-for="i in tableNames.length">
+								{{tableNames[i-1]}}
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td v-bind:colspan="tableNames.length" class="line">
+								<hr />
+							</td>
+						</tr>
+						<tr v-for="i in page.content.length">
+							<td>
+								{{page.content[i-1].courseNo}}
+							</td>
+							<td>
+								{{page.content[i-1].courseName}}
+							</td>
+							<td>
+								{{formatUTCTime(page.content[i-1].examTime)}}
+							</td>
+							<td>
+								{{page.content[i-1].examDuration}}
+							</td>
+							<td>
+								{{page.content[i-1].examAddr}}
+							</td>
+							<td>
+								{{page.content[i-1].finalScore}}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<br />
+				<div class="page">
+					<a v-on:click="doSearch(1)">&lt;&lt;</a>
+					<a v-if="page.number>1" v-on:click="doSearch(page.number-1)">前页</a>
+					<a v-else class="pageDefaultStyle">前页</a>
+					<span v-for="i in page.totalPages" v-bind:class="{'pageActive': i==page.number}"
+						v-on:click="doSearch(i)">
+						{{i}}
+					</span>
+					<a v-if="page.number<page.totalPages" v-on:click="doSearch(page.number+1)">后页</a>
+					<a v-else class="pageDefaultStyle">后页</a>
+					<a v-on:click="doSearch(page.totalPages)">&gt;&gt;</a>
+				</div>
+			</div>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					tableNames: ["课程号", "课程名", "考试日期", "考试时长（小时）", "考试地点", "成绩"],
+					studentNo: "",
+					page: {
+		        		number: 1,
+		        		size: 6,
+		        		totalPages: 10,
+		        		content: []
+		        	},
+					urls: [
+						'queryCourses',
+					]
+				},
+				methods: {
+					doSearch: function(number) {
+						var jsonData={
+							searchText: this.searchText,
+							number: this.page.number,
+		        			size: this.page.size
+						};
+		                //发送 get请求
+		                get(this.urls[0], function(res) {
+		                	v.page.content=res.body;
+		                });
+					}
+				},
+				mounted() {
+					if (parent.homePage)  // 学生登录时没有嵌套页面，homePage元素不存在
+						parent.homePage.innerText="SIMS成绩查询";
+					this.studentNo=sessionStorage.getItem("userName");
+					this.doSearch(1);
+				}
+			});
+		</script>
+	</body>
+</html>
