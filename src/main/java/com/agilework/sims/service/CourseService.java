@@ -8,8 +8,14 @@ import com.agilework.sims.repository.CourseRepository;
 import com.agilework.sims.repository.StuCourseRelationshipRepository;
 import com.agilework.sims.util.SLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,13 +83,25 @@ public class CourseService {
         int res=stuCourseRelationshipRepository.deleteCourseRecords(studentNo,courseNos);
         return res > 0;
     }
-    public List<Course>queryCourseRecords(String studentNo){
-        List<String>courseNos=stuCourseRelationshipRepository.findByStudentNo(studentNo);
-        List<Course>res=new ArrayList<>();
-        for(String courseNo:courseNos){
-            Course course=courseRepository.findByCourseNo(courseNo);
-            res.add(course);
+    public Page<Course> queryCourseRecords(String studentNo, int currentPage , int pageSize){
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        Specification<StudentCourseRelationship> specification = createSpecification(studentNo);
+        Page<StudentCourseRelationship> pages = stuCourseRelationshipRepository.findAll(specification, pageable);
+        SLogger.info(TAG, "course records query SUCCESS, size=" + pages.getSize()
+                + ", page=" + pages.getNumber() + "/" + pages.getTotalPages());
+
+        List<String> courseNos = new ArrayList<>();
+        for (StudentCourseRelationship sc : pages) {
+            courseNos.add(sc.getCourseNo());
         }
-        return res;
+        List<Course> courses = courseRepository.findAllById(courseNos);
+        return new PageImpl<>(courses, pageable, pages.getTotalElements());
+    }
+
+    private Specification<StudentCourseRelationship> createSpecification(final String studentNo) {
+        return (root, criteriaQuery, criteriaBuilder) -> {
+            Path<String> sno = root.get("studentNo");
+            return criteriaBuilder.equal(sno, studentNo);
+        };
     }
 }

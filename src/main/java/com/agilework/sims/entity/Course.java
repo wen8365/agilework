@@ -1,6 +1,7 @@
 package com.agilework.sims.entity;
 
 import lombok.Data;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -17,7 +18,10 @@ public class Course {
     private String courseName;
     private String major;
     private int published;
+    @Nullable
     private Date examTime;
+    @Nullable
     private int examDuration;
+    @Nullable
     private String examAddr;
 }

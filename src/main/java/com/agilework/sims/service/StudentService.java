@@ -2,8 +2,10 @@ package com.agilework.sims.service;
 
 import com.agilework.sims.dto.StudentInfo;
 import com.agilework.sims.entity.Student;
+import com.agilework.sims.entity.StudentCourseRelationship;
 import com.agilework.sims.entity.StudentV;
 import com.agilework.sims.repository.FastSaveRepositoryImpl;
+import com.agilework.sims.repository.StuCourseRelationshipRepository;
 import com.agilework.sims.repository.StudentRepository;
 import com.agilework.sims.repository.StudentVRepository;
 import com.agilework.sims.util.ErrorCode;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,6 +42,9 @@ public class StudentService {
 
     @Autowired
     private StudentVRepository studentVRepository;
+
+    @Autowired
+    private StuCourseRelationshipRepository scRepository;
 
     @Value("${user.status.normal}")
     private int normalStatus;
@@ -144,6 +150,28 @@ public class StudentService {
             	list.size()>0 ? criteriaBuilder.and(list.toArray(new Predicate[0])) :
                 		criteriaBuilder.isTrue(criteriaBuilder.literal(true))
             );
+        };
+    }
+
+    public Page<StudentV> queryStudentByCourse(String courseNo, int currentPage , int pageSize) {
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        Specification<StudentCourseRelationship> specification = createSpecification(courseNo);
+        Page<StudentCourseRelationship> pages = scRepository.findAll(specification, pageable);
+        SLogger.info(TAG, "course student query SUCCESS, size=" + pages.getSize()
+                + ", page=" + pages.getNumber() + "/" + pages.getTotalPages());
+
+        List<String> studentNos = new ArrayList<>();
+        for (StudentCourseRelationship sc : pages) {
+            studentNos.add(sc.getStudentNo());
+        }
+        List<StudentV> studentVList = studentVRepository.findAllById(studentNos);
+        return new PageImpl<>(studentVList, pageable, pages.getTotalElements());
+    }
+
+    private Specification<StudentCourseRelationship> createSpecification(final String courseNo) {
+        return (root, criteriaQuery, criteriaBuilder) -> {
+            Path<String> cno = root.get("courseNo");
+            return criteriaBuilder.equal(cno, courseNo);
         };
     }
 

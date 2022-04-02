@@ -9,6 +9,7 @@ import com.agilework.sims.service.CourseService;
 import com.agilework.sims.service.SessionService;
 import com.agilework.sims.util.SLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
@@ -42,11 +43,10 @@ public class CourseController {
     public Course findCourse(@RequestHeader("sessionId") @NonNull String sessionId, String courseNo){
         Session session = sessionService.getSession(sessionId);
         User user=session.getUser();
+        SLogger.info(TAG, user.getUserNo()+"start query course with courseNo=" + courseNo);
         if(user.getRole()==0){
-            SLogger.info(TAG, user.getUserNo()+"start query course with courseNo=" + courseNo);
             return courseService.findCourseByCourseNoAndPublished(courseNo,1);
         }else{
-            SLogger.info(TAG, user.getUserNo()+"start query course with courseNo=" + courseNo);
             return courseService.findCourseByCourseNo(courseNo);
         }
     }
@@ -86,19 +86,17 @@ public class CourseController {
     }
     @GetMapping("/queryCourseRecords")
     @ResponseBody
-    public List<Course>queryCourseRecords(@RequestHeader("sessionId")String sessionId){
-        Session session = sessionService.getSession(sessionId);
-        User user=session.getUser();
-        String studentNo=user.getUserNo();
-        List<Course>res=courseService.queryCourseRecords(studentNo);
-        return res;
+    public Page<Course> queryCourseRecords(@RequestParam("studentNo") String studentNo,
+                                           @RequestParam("number") int number,
+                                           @RequestParam("size") int size) {
+        SLogger.info(TAG, "query course records, studentNo=" + studentNo);
+        return courseService.queryCourseRecords(studentNo, number, size);
     }
 
     @PostMapping("/updateCourse")
     @ResponseBody
-    public Course updateCourse(Course course){
-        Course res=courseRepository.save(course);
-        return res;
+    public Course updateCourse(@RequestBody Course course){
+        return courseRepository.save(course);
     }
 
     @PostMapping("/deleteCourseByCourseNo")

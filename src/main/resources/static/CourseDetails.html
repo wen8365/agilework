@@ -29,6 +29,7 @@
 						 	<span>课程详情</span>
 						 	<i v-if="role==1&&!edited" class="fa fa-edit" v-on:click="courseUpdate()"></i>
 							<i v-if="role==1&&edited" class="fa fa-save" v-on:click="courseSave()"></i>
+							<i v-if="role==1&&edited" class="fa fa-close" v-on:click="cancelEdit()"></i>
 						</h1>
 					</th>
 					<tbody>
@@ -61,7 +62,7 @@
 									<span v-if="edited">
 										<input type="datetime-local" v-model="newCourse.examTime" />
 									</span>
-									<span v-else>{{course.examTime}}</span>
+									<span v-else>{{formatUTCTime(course.examTime)}}</span>
 								</h2>
 								<h2>
 									<span>考试时长：</span>
@@ -174,7 +175,8 @@
 		        	},
 					urls: [
 						'findCourse',
-						'updateCourse'
+						'updateCourse',
+						'courseStudentQuery'
 					]
 				},
 				methods: {
@@ -189,7 +191,8 @@
 					courseUpdate: function() {
 						this.edited=true;
 						this.newCourse=JSON.parse(JSON.stringify(this.course));
-						this.newCourse.examTime=this.newCourse.examTime.substring(0, 19);
+						var examTime=this.newCourse.examTime;
+						this.newCourse.examTime=examTime?examTime.substring(0, 19):null;
 					},
 					courseSave: function() {
 						var jsonData=this.newCourse;
@@ -198,7 +201,7 @@
 						jsonData.examTime=getDate(jsonData.examTime);
 						console.log(jsonData);
 		                //发送 post请求
-		                post(this.urls[1], jsonData, function(res) {
+		                post(this.urls[1], JSON.stringify(jsonData), function(res) {
 		                	console.log(res);
 		                	var course=res.body;
 		                	if(course!=null) {
@@ -210,18 +213,16 @@
 		                	}
 		                });
 					},
+					cancelEdit: function() {
+						this.edited=false;
+					},
 					doSearch: function(number) {
-						var jsonData={
-							number: number,
-		        			size: this.page.size
-						};
-		                //发送 post请求
-		                this.$http.post(this.urls[1], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.page=res.body;
-		                },function(res){
-		                    console.log(res);
+		                var url = this.urls[2] + "?courseNo=" + this.courseNo
+						                       + "&number=" + (number - 1)
+						                       + "&size=" + this.page.size;
+		                get(url, res => {
+		                	v.page=res.body;
+		                	v.page.number=v.page.number+1;
 		                });
 					},
 					changeRadio: function() {

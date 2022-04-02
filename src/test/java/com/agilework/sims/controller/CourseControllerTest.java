@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,17 +23,21 @@ public class CourseControllerTest {
     private CourseController courseController;
     @Autowired
     private LoginController loginController;
+    private static final String USER_NAME_1 = "MF21320138";
+    private static final String USER_NAME_2 = "MF21320137";
     private static final String P = "Abc123456=";
+    private static final String CNO_1 = "202201=";
+    private static final String SUCCESS = "success";
     @Test
     public void testQueryCourses(){
         //student account
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME_1, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         List<Course>list=courseController.queryCourses(sessionId);
         Assertions.assertEquals(list.size(),2);
         //teacher account
-        LoginReq req1 = new LoginReq("MF21320137", P);
+        LoginReq req1 = new LoginReq(USER_NAME_2, P);
         LoginResp resp1 = loginController.login(req1);
         String sessionId1=resp1.getSessionId();
         List<Course>list1=courseController.queryCourses(sessionId1);
@@ -41,17 +46,17 @@ public class CourseControllerTest {
     @Test
     public void testFindCourse(){
         //student account
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME_1, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
         Course course=courseController.findCourse(sessionId,"202205");
         SLogger.info(TAG, "course=" + course);
 
         //teacher account
-        LoginReq req1 = new LoginReq("MF21320137", P);
+        LoginReq req1 = new LoginReq(USER_NAME_2, P);
         LoginResp resp1 = loginController.login(req1);
         String sessionId1=resp1.getSessionId();
-        Course course1=courseController.findCourse(sessionId1,"202201");
+        Course course1=courseController.findCourse(sessionId1,CNO_1);
         SLogger.info(TAG, "course=" + course1);
     }
     @Test
@@ -70,15 +75,16 @@ public class CourseControllerTest {
         list.add(course);
         list.add(course1);
         Map<String, Object>map=courseController.addCourses(list);
-        Assertions.assertEquals(map.get("success"),true);
+        Assertions.assertEquals(map.get(SUCCESS),true);
     }
     @Test
     public void testChangeCourseStats(){
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME_1, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
-        Map<String, Object>map=courseController.changeCourseStatus("202201",1);
-        Assertions.assertEquals(map.get("success"),true);
+        SLogger.info(TAG, "sessionId=" + sessionId);
+        Map<String, Object>map=courseController.changeCourseStatus(CNO_1,1);
+        Assertions.assertEquals(map.get(SUCCESS),true);
 
     }
     @Test
@@ -86,31 +92,31 @@ public class CourseControllerTest {
         List<StudentCourseRelationship>list=new ArrayList<>();
         StudentCourseRelationship sc1=new StudentCourseRelationship();
         sc1.setCourseNo("212201");
-        sc1.setStudentNo("MF21320138");
+        sc1.setStudentNo(USER_NAME_1);
         sc1.setElectiveTime(new Date());
         StudentCourseRelationship sc2=new StudentCourseRelationship();
         sc2.setCourseNo("212205");
-        sc2.setStudentNo("MF21320138");
+        sc2.setStudentNo(USER_NAME_1);
         sc2.setElectiveTime(new Date());
         list.add(sc1);
         list.add(sc2);
         Map<String, Object>map=courseController.addCourseRecords(list);
-        Assertions.assertEquals(map.get("success"),true);
+        Assertions.assertEquals(map.get(SUCCESS),true);
     }
     @Test
     public void testQueryCourseRecord(){
-        LoginReq req = new LoginReq("MF21320138", P);
+        LoginReq req = new LoginReq(USER_NAME_1, P);
         LoginResp resp = loginController.login(req);
         String sessionId=resp.getSessionId();
-        List<Course>res=courseController.queryCourseRecords(sessionId);
-        Assertions.assertEquals(res.size(),2);
+        Page<Course> res=courseController.queryCourseRecords(USER_NAME_1, 0, 10);
+        Assertions.assertEquals(res.getTotalElements(),2);
     }
     @Test
     public void testUpdateCourse(){
-        LoginReq req1 = new LoginReq("MF21320137", P);
+        LoginReq req1 = new LoginReq(USER_NAME_2, P);
         LoginResp resp1 = loginController.login(req1);
         String sessionId1=resp1.getSessionId();
-        Course course1=courseController.findCourse(sessionId1,"202201");
+        Course course1=courseController.findCourse(sessionId1,CNO_1);
         course1.setCourseName("software engineering");
         course1.setMajor("se");
         Course course=courseController.updateCourse(course1);
@@ -120,6 +126,6 @@ public class CourseControllerTest {
     @Test
     public void testDeleteCourse(){
         Map<String, Object>map=courseController.deleteCourse("202208");
-        Assertions.assertEquals(map.get("success"),true);
+        Assertions.assertEquals(map.get(SUCCESS),true);
     }
 }
