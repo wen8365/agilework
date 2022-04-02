@@ -7,6 +7,17 @@
 			.subPageBox {
 				padding: 80px 80px 0px !important;
 			}
+			.detailTable .info {
+				width: 250px !important;
+			}
+			td .table td {
+				text-align: center;
+				vertical-align: middle !important;
+			}
+			td .table td .lesson {
+				text-align: left;
+				font-size: 12px;
+			}
 		</style>
 		<script src="js/dependencies.js"></script>
 	</head>
@@ -57,7 +68,7 @@
 								</h2>
 							</td>
 							<td>
-								<h1>课程表  <a href="CoursesPage.html">选课</a></h1>
+								<h1>课程表  <input v-if="role==0" type="button" class="btn" value="选课" v-on:click="gotoCoursesPick()"/></h1>
 								<table class="table">
 									<thead>
 										<tr>
@@ -67,45 +78,24 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td colspan="5" class="line">
-												<hr />
-											</td>
-										</tr>
-										<tr v-for="i in page.content.length">
-											<td>
-												{{page.content[i-1].courseNo}}
-											</td>
-											<td>
-												{{page.content[i-1].courseName}}
-											</td>
-											<td>
-												{{page.content[i-1].courseArrangement}}
-											</td>
-											<td>
-												{{page.content[i-1].classTime}}
-											</td>
-											<td>
-												{{page.content[i-1].classPlace}}
+										<tr v-for="j in schoolTimetable[0].length">
+											<td style="width: 5.5%;">{{j}}</td>
+											<td style="width: 13.5%;" v-for="i in schoolTimetable.length">
+												<div class="lesson" v-for="k in schoolTimetable[i-1][j-1].length">
+													{{schoolTimetable[i-1][j-1][k-1].courseName}}&nbsp;
+													{{schoolTimetable[i-1][j-1][k-1].address}}&nbsp;
+													{{schoolTimetable[i-1][j-1][k-1].startWeek}}~{{schoolTimetable[i-1][j-1][k-1].endWeek}}周
+												</div>
 											</td>
 										</tr>
 									</tbody>
 								</table>
-								<br />
-								<div class="page">
-									<a v-on:click="doSearch(1)">&lt;&lt;</a>
-									<a v-if="page.number>1" v-on:click="doSearch(page.number-1)">前页</a>
-									<a v-else class="pageDefaultStyle">前页</a>
-									<span v-for="i in page.totalPages" v-bind:class="{'pageActive': i==page.number}" 
-										v-on:click="doSearch(i)">
-										{{i}}
-									</span>
-									<a v-if="page.number<page.totalPages" v-on:click="doSearch(page.number+1)">后页</a>
-									<a v-else class="pageDefaultStyle">后页</a>
-									<a v-on:click="doSearch(page.totalPages)">&gt;&gt;</a>
-								</div>
 							</td>
-							<td></td>
+							<td>
+								<h1>
+									<a v-if="role==0" href="" v-on:click.prevent="toScoreInquiry()">成绩查询</a>
+								</h1>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -115,7 +105,7 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					tableNames: ["课程号", "课程名", "课程安排", "上课时间", "上课地点"],
+					tableNames: ["", "一", "二", "三", "四", "五", "六", "日"],
 					student: {
 						studentNo: "",
 						studentName: "",
@@ -135,15 +125,40 @@
 					studentNo: '',
 					role: 0,
 					edited: false,
-					page: {
-		        		number: 1,
-		        		size: 6,
-		        		totalPages: 10,
-		        		content: []
-		        	},
+					schoolTimetable: [[]],
+					lessons: [
+						{
+						    dayOfWeek: 1,
+						    lessonNo: 1,
+						    courseNo: 1001,
+						    courseName: "课程1",
+						    address: "教121",
+						    startWeek: 1,
+						    endWeek: 9
+						},
+						{
+						    dayOfWeek: 3,
+						    lessonNo: 11,
+						    courseNo: 1001,
+						    courseName: "课程3",
+						    address: "教220",
+						    startWeek: 3,
+						    endWeek: 14
+						},
+						{
+						    dayOfWeek: 7,
+						    lessonNo: 7,
+						    courseNo: 1001,
+						    courseName: "课程4",
+						    address: "教101",
+						    startWeek: 1,
+						    endWeek: 12
+						},
+					],
 					urls: [
 						'studentQuery',
-						'studentUpdate'
+						'studentUpdate',
+						'queryScheduler',
 					]
 				},
 				methods: {
@@ -205,27 +220,38 @@
 					cancelEdit: function() {
 						this.edited=false;
 					},
-					doSearch: function(number) {
+					gotoCoursesPick: function() {
+						parent.location.href="CoursesPage.html";
+					},
+					toScoreInquiry: function() {
+						location.href="scoreInquiry.html";
+					},
+					queryScheduler: function() {
 						var jsonData={
-							number: number,
-		        			size: this.page.size
+							studentNo: this.studentNo
 						};
-		                //发送 post请求
-		                this.$http.post(this.urls[1], jsonData, {
-		                	emulateJSON: true
-		                }).then(function(res){
-		                	this.page=res.body;
-		                },function(res){
-		                    console.log(res);
+		                //发送 get请求
+		                get(this.urls[2], function(res) {
+		                	var errCode=res.body.errCode;
+		                	switch(errCode) {
+		                	case 0:
+		                		this.schoolTimetable=getSchoolTimetable(res.body.lessons);
+		                		break;
+		                	default:
+		                		alert("课程表查询失败！");
+		                	}
 		                });
 					}
 				},
 				mounted() {
 					parent.homePage.innerText="SIMS学生详情";
-					this.studentNo=sessionStorage.getItem("studentNo");
+					var sno1 = sessionStorage.getItem("userName");
+					var sno2 = sessionStorage.getItem("studentNo");  //从学生管理页面进来后，用选择的学生号覆盖登录账号
+					this.studentNo = sno2 ? sno2 : sno1;
 					this.role=sessionStorage.getItem("role");
 					this.studentSelect();
-					//this.doSearch(1);
+					this.schoolTimetable=getSchoolTimetable(this.lessons);
+					this.queryScheduler();
 				}
 			});
 		</script>
