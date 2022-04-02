@@ -148,23 +148,6 @@
 					]
 				},
 				methods: {
-					getSchoolTimetable: function(lessons) {
-						var schoolTimetable=[];
-						for(var i=0; i<7; i++) {
-							schoolTimetable.push([]);
-							for(var j=0; j<11; j++) {
-								schoolTimetable[i].push([]);
-							}
-						}
-						
-						for(var i=0; i<lessons.length; i++) {
-							var dayOfWeek=lessons[i].dayOfWeek;
-							var lessonNo=lessons[i].lessonNo;
-							schoolTimetable[dayOfWeek-1][lessonNo-1].push(lessons[i]);
-						}
-						
-						return schoolTimetable;
-					},
 					edit: function(lesson) {
 						this.lesson=JSON.parse(JSON.stringify(lesson));
 						this.dialogVisible=true;
@@ -227,7 +210,7 @@
 						parent.homePage.innerText="SIMS课表设置";
 					this.role=sessionStorage.getItem("role");
 					this.studentNo=sessionStorage.getItem("userName");
-					this.schoolTimetable=this.getSchoolTimetable(this.lessons);
+					this.schoolTimetable=getSchoolTimetable(this.lessons);
 					this.queryScheduler();
 					this.queryCourses();
 				}
