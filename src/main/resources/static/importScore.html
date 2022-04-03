@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<title>SIMS成绩导入</title>
+		<style>
+			.subPageBox {
+				padding: 80px 190px 0px !important;
+			}
+			.importBtn h1 {
+				display: inline-block;
+			}
+			td {
+				width: 10%;
+			}
+			.rate {
+				color: deepskyblue;
+			}
+		</style>
+		<script src="js/dependencies.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<div class="subPageBox">
+				<div class="importBtn">
+					<h1>课程 {{course.courseName}} 成绩导入</h1>
+					<input type="button" class="btn" value="确认导入" v-on:click="importScore()" />
+				</div>
+				<table class="table importTable">
+					<thead>
+						<tr>
+							<td v-for="i in tableNames.length">
+								{{tableNames[i-1]}}
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td v-bind:colspan="tableNames.length" class="line">
+								<hr />
+							</td>
+						</tr>
+						<tr v-for="i in scores.length">
+							<td>
+								<input type="text" v-model="scores[i-1].studentNo" />
+							</td>
+							<td>
+								<input type="number" v-model="scores[i-1].dailyScore" />
+							</td>
+							<td>
+								<input type="number" class="rate" min="0" max="100" v-model="rate.dailyRate" />
+							</td>
+							<td>
+								<input type="number" v-model="scores[i-1].workScore" />
+							</td>
+							<td>
+								<input type="number" class="rate" min="0" max="100" v-model="rate.workRate" />
+							</td>
+							<td>
+								<input type="number" v-model="scores[i-1].expScore" />
+							</td>
+							<td>
+								<input type="number" class="rate" min="0" max="100" v-model="rate.expRate" />
+							</td>
+							<td>
+								<input type="number" v-model="scores[i-1].examScore" />
+							</td>
+							<td style="background-color: whitesmoke;">
+								<input type="number" class="rate" style="background-color: whitesmoke;" v-bind:value="100-rate.dailyRate-rate.workRate-rate.expRate" disabled />
+							</td>
+							<td>
+								<i class="fa fa-trash-o" v-on:click="minus(i-1)"></i>
+							</td>
+						</tr>
+						<tr>
+							<td v-bind:colspan="tableNames.length" class="plus">
+								<i class="fa fa-plus-circle" v-on:click="plus()"></i>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					tableNames: ["学号", "平时成绩", "平时占比", "作业成绩", "作业占比", "实验成绩", "实验占比", "考试成绩", "考试占比", "操作"],
+					course: {
+						courseNo: '',
+						courseName: ''
+					},
+					rate: {
+						dailyRate: 40,
+						workRate: 0,
+						expRate: 30
+					},
+					scores: [
+						{
+							studentNo: 'MF12345678',
+							dailyScore: 70,
+							workScore: 0,
+							expScore: 60,
+							examScore: 80
+						},
+						{
+							studentNo: 'MF12345678',
+							dailyScore: 70,
+							workScore: 0,
+							expScore: 60,
+							examScore: 80
+						},
+						{
+							studentNo: 'MF12345678',
+							dailyScore: 70,
+							workScore: 0,
+							expScore: 60,
+							examScore: 80
+						},
+						{
+							studentNo: 'MF12345678',
+							dailyScore: 70,
+							workScore: 0,
+							expScore: 60,
+							examScore: 80
+						},
+						{
+							studentNo: 'MF12345678',
+							dailyScore: 70,
+							workScore: 0,
+							expScore: 60,
+							examScore: 80
+						},
+						{
+							studentNo: 'MF12345678',
+							dailyScore: 70,
+							workScore: 0,
+							expScore: 60,
+							examScore: 80
+						},
+					],
+					urls: [
+						'findCourse',
+						''
+					]
+				},
+				methods: {
+					findCourse: function() {
+						var url=this.urls[0]+"?courseNo="+this.course.courseNo;
+						//发送 get请求
+		                get(url, function(res) {
+		                	v.course=res.body;
+		                });
+					},
+					importScore: function() {
+						var jsonData=this.scores;
+						for(var i=0; i<jsonData.length; i++) {
+							jsonData.dailyRate=this.rate.dailyRate;
+							jsonData.workRate=this.rate.workRate;
+							jsonData.expRate=this.rate.expRate;
+							jsonData.examRate=100-this.rate.dailyRate-this.rate.workRate-this.rate.expRate;
+						}
+						console.log(jsonData);
+						//发送 post请求
+		                post(this.urls[1], JSON.stringify(jsonData), function(res) {
+		                	alert(res.body.message);
+		                });
+					},
+					plus: function() {
+						this.scores.push({
+							studentNo: '',
+							dailyScore: 0,
+							workScore: 0,
+							expScore: 0,
+							examScore: 0
+						});
+					},
+					minus: function(n) {
+						this.scores.splice(n, 1);
+					}
+				},
+				mounted() {
+					parent.homePage.innerText="SIMS成绩导入";
+					this.course.courseNo=sessionStorage.getItem("courseNo");
+					this.findCourse();
+				}
+			});
+		</script>
+	</body>
+</html>
