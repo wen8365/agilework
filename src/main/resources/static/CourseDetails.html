@@ -130,7 +130,7 @@
 							</td>
 							<td>
 								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<a v-if="role==1" href="#" onclick="alert('敬请期待！')">
+								<a v-if="role==1" href="" v-on:click.prevent="importScore(course.courseNo)">
 									<h2 class="studentGradeImport">学生成绩导入</h2>
 								</a>
 							</td>
@@ -227,7 +227,11 @@
 					},
 					changeRadio: function() {
 						this.$set(this.newCourse, "published", !this.newCourse.published);
-					}
+					},
+					importScore: function(courseNo) {
+						sessionStorage.setItem("courseNo", courseNo);
+						location.href="importScore.html";
+					},
 				},
 				mounted() {
 					parent.homePage.innerText="SIMS课程详情";
