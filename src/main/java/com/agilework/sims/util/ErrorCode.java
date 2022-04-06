@@ -24,6 +24,9 @@ public enum ErrorCode {
     STUDENT_UPDATE_PERMISSION_DENIED(1305, "student update permission denied"),
     STUDENT_UPDATE_INFO_INVALID(1306, "student information invalid"),
     STUDENT_REMOVE_PERMISSION_DENIED(1307, "student remove permission denied"),
+    COURSE_RELATION_QUERY_NOT_EXISTS(1401, "student course relationship not exists"),
+    SCHEDULER_UPDATE_PERMISSION_DENIED(1501, "scheduler update permission denied"),
+    SCHEDULER_UPDATE_LESSONS_EMPTY(1502, "scheduler update lessons is empty"),
     UNKNOWN(1999, "unknown error");
 
     @Getter

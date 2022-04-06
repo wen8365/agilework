@@ -18,4 +18,6 @@ public interface StuCourseRelationshipRepository extends
     @Query("delete from StudentCourseRelationship sc where " +
             "sc.studentNo=?1 and sc.courseNo in (?2)")
     int deleteCourseRecords(String studentNo, List<String>courseNos);
+    @Query("select sc.courseNo from StudentCourseRelationship sc where sc.studentNo=:studentNo")
+    List<String> findByStudentNo(String studentNo);
 }

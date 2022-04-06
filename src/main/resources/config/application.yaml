@@ -47,3 +47,11 @@ login:
 role:
   student: 0
   teacher: 1
+
+scheduler:
+  week:
+    start: 1
+    end: 18
+  lesson:
+    start: 1
+    end: 11
