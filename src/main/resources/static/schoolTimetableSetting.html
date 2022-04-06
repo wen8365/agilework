@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<title>SIMS课表设置</title>
+		<style>
+			.subPageBox {
+				padding: 80px 80px 10px !important;
+			}
+			.table {
+				margin-top: 10px !important;
+			}
+			.table td i {
+    			margin-right: 0px !important;
+			}
+			td {
+				text-align: center;
+			}
+			td .lesson {
+				text-align: left;
+				font-size: 12px;
+			}
+		</style>
+		<script src="js/dependencies.js"></script>
+		<!-- element-ui -->
+		<link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.7/theme-chalk/index.min.css">
+		<script src="https://cdn.staticfile.org/element-ui/2.15.7/index.min.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<div class="subPageBox">
+				<h1>
+				 	<span>课表设置</span>
+				</h1>
+				<table class="table">
+					<thead>
+						<tr>
+							<td v-for="i in tableNames.length">
+								{{tableNames[i-1]}}
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="j in schoolTimetable[0].length">
+							<td style="width: 5.5%;">{{j}}</td>
+							<td class="visibility" style="width: 13.5%;" v-for="i in schoolTimetable.length">
+								<div class="lesson" v-for="k in schoolTimetable[i-1][j-1].length">
+									{{schoolTimetable[i-1][j-1][k-1].courseName}}&nbsp;
+									{{schoolTimetable[i-1][j-1][k-1].address}}&nbsp;
+									{{schoolTimetable[i-1][j-1][k-1].startWeek}}~{{schoolTimetable[i-1][j-1][k-1].endWeek}}周
+									<i class="fa fa-edit" v-on:click="edit(schoolTimetable[i-1][j-1][k-1])"></i>
+								</div>
+								<div>
+									<i class="fa fa-plus" v-on:click="plus(i, j)"></i>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<el-dialog title="指定课程" :visible.sync="dialogVisible" width="30%" @close="dialogVisible=false" :close-on-click-modal="false">
+				<div>
+       				课程&emsp;&emsp;
+       				<select class="select" v-model="lesson.courseNo">
+						<option v-for="i in courses.length" v-bind:value="courses[i-1].courseNo">
+							{{courses[i-1].courseName}}
+						</option>
+					</select>
+       			</div>
+       			<div>
+       				地点&emsp;&emsp;
+       				<input type="text" v-model="lesson.address" />
+       			</div>
+       			<div>
+       				开始周&emsp;
+       				<input type="number" min="1" max="20" v-model="lesson.startWeek" />
+       			</div>
+       			<div>
+       				结束周&emsp;
+       				<input type="number" v-bind:min="lesson.startWeek" max="20" v-model="lesson.endWeek" />
+       			</div>
+			  	<span slot="footer" class="dialog-footer">
+			  		<input type="button" v-on:click="updateScheduler()" value="确定" />
+			  		<input type="button" v-on:click="dialogVisible=false" value="取消" />
+			  	</span>
+			</el-dialog>
+		</div>
+		<script>
+			var v=new Vue({
+				el: '#app',
+				data: {
+					tableNames: ["", "一", "二", "三", "四", "五", "六", "日"],
+					role: 0,
+					edited: false,
+					dialogVisible: false,
+					schoolTimetable: [[]],
+					lesson: {
+						dayOfWeek: 0,
+					  	lessonNo: 0,
+					  	courseNo: "",
+					  	address: "",
+					  	startWeek: 1,
+					  	endWeek: 1
+					},
+					courses: [],
+					lessons: [
+						{
+						    dayOfWeek: 1,
+						    lessonNo: 1,
+						    courseNo: 1001,
+						    courseName: "课程1",
+						    address: "教121",
+						    startWeek: 1,
+						    endWeek: 9
+						},
+						{
+						    dayOfWeek: 1,
+						    lessonNo: 1,
+						    courseNo: 1001,
+						    courseName: "课程2",
+						    address: "教121",
+						    startWeek: 1,
+						    endWeek: 18
+						},
+						{
+						    dayOfWeek: 3,
+						    lessonNo: 11,
+						    courseNo: 1001,
+						    courseName: "课程3",
+						    address: "教220",
+						    startWeek: 3,
+						    endWeek: 14
+						},
+						{
+						    dayOfWeek: 7,
+						    lessonNo: 7,
+						    courseNo: 1001,
+						    courseName: "课程4",
+						    address: "教101",
+						    startWeek: 1,
+						    endWeek: 12
+						},
+					],
+					urls: [
+						'queryScheduler',
+						'queryCourses',
+						'updateScheduler'
+					]
+				},
+				methods: {
+					edit: function(lesson) {
+						this.lesson=JSON.parse(JSON.stringify(lesson));
+						this.dialogVisible=true;
+					},
+					plus: function(dayOfWeek, lessonNo) {
+						this.lesson={
+							dayOfWeek: dayOfWeek,
+						  	lessonNo: lessonNo,
+						  	courseNo: "",
+						  	address: "",
+						  	startWeek: 1,
+						  	endWeek: 1
+						};
+						this.dialogVisible=true;
+					},
+					queryScheduler: function() {
+						var jsonData={
+							studentNo: this.studentNo
+						};
+		                //发送 get请求
+		                get(this.urls[0], function(res) {
+		                	var errCode=res.body.errCode;
+		                	switch(errCode) {
+		                	case 0:
+		                		this.schoolTimetable=getSchoolTimetable(res.body.lessons);
+		                		break;
+		                	default:
+		                		alert("课程表查询失败！");
+		                	}
+		                });
+					},
+					queryCourses: function() {
+						//发送 get请求
+						get(this.urls[1], function(res) {
+		                	v.courses=res.body;
+		                });
+					},
+					updateScheduler: function() {
+						var jsonData=[this.lesson];
+						console.log(jsonData);
+						//发送 post请求
+		                post(this.urls[2], JSON.stringify(jsonData), function(res) {
+		                	console.log(res);
+		                	var errCode=res.body.errCode;
+		                	switch(errCode) {
+		                	case 0:
+		                		alert("课程表插入/更新成功！");
+		                		v.dialogVisible=false;
+		                		v.queryScheduler();
+		                		break;
+		                	default:
+		                		alert("课程表插入/更新失败！");
+		                	}
+		                	
+		                });
+					}
+				},
+				mounted() {
+					if (parent.homePage)  // 学生登录时没有嵌套页面，homePage元素不存在
+						parent.homePage.innerText="SIMS课表设置";
+					this.role=sessionStorage.getItem("role");
+					this.studentNo=sessionStorage.getItem("userName");
+					this.schoolTimetable=getSchoolTimetable(this.lessons);
+					this.queryScheduler();
+					this.queryCourses();
+				}
+			});
+		</script>
+	</body>
+</html>
