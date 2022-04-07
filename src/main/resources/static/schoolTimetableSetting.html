@@ -73,11 +73,11 @@
        			</div>
        			<div>
        				开始周&emsp;
-       				<input type="number" min="1" max="20" v-model="lesson.startWeek" />
+       				<input type="number" min="1" max="18" v-model="lesson.startWeek" />
        			</div>
        			<div>
        				结束周&emsp;
-       				<input type="number" v-bind:min="lesson.startWeek" max="20" v-model="lesson.endWeek" />
+       				<input type="number" v-bind:min="lesson.startWeek" max="18" v-model="lesson.endWeek" />
        			</div>
 			  	<span slot="footer" class="dialog-footer">
 			  		<input type="button" v-on:click="updateScheduler()" value="确定" />
@@ -103,44 +103,6 @@
 					  	endWeek: 1
 					},
 					courses: [],
-					lessons: [
-						{
-						    dayOfWeek: 1,
-						    lessonNo: 1,
-						    courseNo: 1001,
-						    courseName: "课程1",
-						    address: "教121",
-						    startWeek: 1,
-						    endWeek: 9
-						},
-						{
-						    dayOfWeek: 1,
-						    lessonNo: 1,
-						    courseNo: 1001,
-						    courseName: "课程2",
-						    address: "教121",
-						    startWeek: 1,
-						    endWeek: 18
-						},
-						{
-						    dayOfWeek: 3,
-						    lessonNo: 11,
-						    courseNo: 1001,
-						    courseName: "课程3",
-						    address: "教220",
-						    startWeek: 3,
-						    endWeek: 14
-						},
-						{
-						    dayOfWeek: 7,
-						    lessonNo: 7,
-						    courseNo: 1001,
-						    courseName: "课程4",
-						    address: "教101",
-						    startWeek: 1,
-						    endWeek: 12
-						},
-					],
 					urls: [
 						'queryScheduler',
 						'queryCourses',
@@ -150,6 +112,7 @@
 				methods: {
 					edit: function(lesson) {
 						this.lesson=JSON.parse(JSON.stringify(lesson));
+						this.edited=true;
 						this.dialogVisible=true;
 					},
 					plus: function(dayOfWeek, lessonNo) {
@@ -161,18 +124,58 @@
 						  	startWeek: 1,
 						  	endWeek: 1
 						};
+						this.edited=false;
 						this.dialogVisible=true;
 					},
+					checkLesson: function() {
+						if(this.lesson.courseNo=="") {
+							alert("课程不能为空！");
+							return false;
+						}
+						
+						if(this.lesson.address=="") {
+							alert("地点不能为空！");
+							return false;
+						}
+						
+						if(this.lesson.startWeek=="") {
+							alert("开始周不能为空！");
+							return false;
+						}
+						
+						if(this.lesson.endWeek=="") {
+							alert("结束周不能为空！");
+							return false;
+						}
+						
+						if(this.lesson.startWeek<1||this.lesson.startWeek>18) {
+							alert("开始周必须符合1~18周！");
+							return false;
+						}
+						
+						if(this.lesson.endWeek<1||this.lesson.endWeek>18) {
+							alert("结束周必须符合1~18周！");
+							return false;
+						}
+						
+						if(parseInt(this.lesson.startWeek)>parseInt(this.lesson.endWeek)) {
+							alert("开始周不能超过结束周！");
+							return false;
+						}
+						
+						return true;
+					},
 					queryScheduler: function() {
-						var jsonData={
-							studentNo: this.studentNo
-						};
 		                //发送 get请求
 		                get(this.urls[0], function(res) {
+		                	console.log(res);
 		                	var errCode=res.body.errCode;
 		                	switch(errCode) {
 		                	case 0:
-		                		this.schoolTimetable=getSchoolTimetable(res.body.lessons);
+		                		v.schoolTimetable=getSchoolTimetable(res.body.lessons);
+		                		break;
+		                	case 1401:
+		                		alert("没有选课记录！");
 		                		break;
 		                	default:
 		                		alert("课程表查询失败！");
@@ -186,6 +189,11 @@
 		                });
 					},
 					updateScheduler: function() {
+						//校验课程
+						if(!this.checkLesson()) {
+							return;
+						}
+						
 						var jsonData=[this.lesson];
 						console.log(jsonData);
 						//发送 post请求
@@ -194,14 +202,19 @@
 		                	var errCode=res.body.errCode;
 		                	switch(errCode) {
 		                	case 0:
-		                		alert("课程表插入/更新成功！");
+		                		alert("课程表"+(v.edited?"更新":"插入")+"成功！");
 		                		v.dialogVisible=false;
 		                		v.queryScheduler();
+		                		break;
+		                	case 1501:
+		                		alert("没有权限！");
+		                		break;
+							case 1502:
+								alert("请求体为空！");
 		                		break;
 		                	default:
 		                		alert("课程表插入/更新失败！");
 		                	}
-		                	
 		                });
 					}
 				},
@@ -209,8 +222,7 @@
 					if (parent.homePage)  // 学生登录时没有嵌套页面，homePage元素不存在
 						parent.homePage.innerText="SIMS课表设置";
 					this.role=sessionStorage.getItem("role");
-					this.studentNo=sessionStorage.getItem("userName");
-					this.schoolTimetable=getSchoolTimetable(this.lessons);
+					this.schoolTimetable=getSchoolTimetable([]);
 					this.queryScheduler();
 					this.queryCourses();
 				}

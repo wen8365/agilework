@@ -126,35 +126,6 @@
 					role: 0,
 					edited: false,
 					schoolTimetable: [[]],
-					lessons: [
-						{
-						    dayOfWeek: 1,
-						    lessonNo: 1,
-						    courseNo: 1001,
-						    courseName: "课程1",
-						    address: "教121",
-						    startWeek: 1,
-						    endWeek: 9
-						},
-						{
-						    dayOfWeek: 3,
-						    lessonNo: 11,
-						    courseNo: 1001,
-						    courseName: "课程3",
-						    address: "教220",
-						    startWeek: 3,
-						    endWeek: 14
-						},
-						{
-						    dayOfWeek: 7,
-						    lessonNo: 7,
-						    courseNo: 1001,
-						    courseName: "课程4",
-						    address: "教101",
-						    startWeek: 1,
-						    endWeek: 12
-						},
-					],
 					urls: [
 						'studentQuery',
 						'studentUpdate',
@@ -227,15 +198,19 @@
 						location.href="scoreInquiry.html";
 					},
 					queryScheduler: function() {
-						var jsonData={
-							studentNo: this.studentNo
-						};
+						var url=this.urls[2]+"?studentNo="+this.studentNo;
 		                //发送 get请求
-		                get(this.urls[2], function(res) {
+		                get(url, function(res) {
+		                	console.log(res);
 		                	var errCode=res.body.errCode;
 		                	switch(errCode) {
 		                	case 0:
-		                		this.schoolTimetable=getSchoolTimetable(res.body.lessons);
+		                		v.schoolTimetable=getSchoolTimetable(res.body.lessons);
+		                		break;
+		                	case 1401:
+								if(v.role==0) {
+									alert("没有选课记录！");
+		                		}
 		                		break;
 		                	default:
 		                		alert("课程表查询失败！");
@@ -250,7 +225,7 @@
 					this.studentNo = sno2 ? sno2 : sno1;
 					this.role=sessionStorage.getItem("role");
 					this.studentSelect();
-					this.schoolTimetable=getSchoolTimetable(this.lessons);
+					this.schoolTimetable=getSchoolTimetable([]);
 					this.queryScheduler();
 				}
 			});
