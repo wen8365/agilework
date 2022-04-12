@@ -23,21 +23,7 @@ public class Student extends StudentBase {
         super();
     }
 
-    public Student(StudentInfo info) {
-        copy(info);
-    }
-
     public String getStudentNo() {
         return studentNo;
-    }
-
-    public void copy(StudentInfo info) {
-        this.studentNo = info.getStudentNo();
-        this.studentName = info.getStudentName();
-        this.sex = info.getSex();
-        this.major = info.getMajor();
-        this.grade = info.getGrade();
-        this.clazz = info.getClazz();
-        this.password = info.getPassword();
     }
 }

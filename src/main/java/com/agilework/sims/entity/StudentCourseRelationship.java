@@ -1,13 +1,15 @@
 package com.agilework.sims.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "t_sc_relationship")
-@Data
+@Getter
+@Setter
 public class StudentCourseRelationship {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

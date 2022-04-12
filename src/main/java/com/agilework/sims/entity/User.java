@@ -1,6 +1,7 @@
 package com.agilework.sims.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -8,7 +9,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "v_user")
-@Data
+@Getter
+@Setter
 public class User {
     @Id
     private String userNo;

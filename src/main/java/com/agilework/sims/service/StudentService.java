@@ -10,6 +10,7 @@ import com.agilework.sims.repository.StudentRepository;
 import com.agilework.sims.repository.StudentVRepository;
 import com.agilework.sims.util.ErrorCode;
 import com.agilework.sims.util.SLogger;
+import com.agilework.sims.util.StudentConverter;
 import com.agilework.sims.util.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,28 +76,17 @@ public class StudentService {
 
     private void convertToStudents(List<StudentInfo> studentInfoList, List<Student> students) {
         for (StudentInfo studentInfo : studentInfoList) {
-            Student student = new Student(studentInfo);
+            Student student = StudentConverter.convert2Student(studentInfo);
             student.setPassword(defaultPasswd);
             students.add(student);
         }
-    }
-
-    private StudentInfo convertToStudentInfo(StudentV student) {
-        StudentInfo studentInfo = new StudentInfo();
-        studentInfo.setStudentNo(student.getStudentNo());
-        studentInfo.setStudentName(student.getStudentName());
-        studentInfo.setSex(student.getSex());
-        studentInfo.setMajor(student.getMajor());
-        studentInfo.setGrade(student.getGrade());
-        studentInfo.setClazz(student.getClazz());
-        return studentInfo;
     }
 
     public StudentInfo queryStudent(String userNo) {
         StudentV student =  studentVRepository.findByStudentNo(userNo);
         if (student != null) {
             SLogger.info(TAG, "query SUCCESS, studentNo= " + student.getStudentNo());
-            return convertToStudentInfo(student);
+            return StudentConverter.convertToStudentInfo(student);
         }
         SLogger.error(TAG, "query FAILED, student NOT FOUND!");
         return null;
@@ -176,8 +166,7 @@ public class StudentService {
     }
 
     public ErrorCode updateStudent(StudentInfo studentInfo) {
-        Student student = new Student();
-        student.copy(studentInfo);
+        Student student = StudentConverter.convert2Student(studentInfo);
         int row = studentRepository.updateByStudentNoAndStatus(student, normalStatus);
         ErrorCode code = row > 0 ? ErrorCode.NORMAL : ErrorCode.STUDENT_QUERY_NOT_EXISTS;
         SLogger.info(TAG, "update complete, row=" + row + ", reason=" + code.getReason());
@@ -187,8 +176,7 @@ public class StudentService {
     public Tuple<ErrorCode, Integer> updateStudents(List<StudentInfo> studentInfoList) {
         int rows = 0;
         for (StudentInfo studentInfo : studentInfoList) {
-            Student student = new Student();
-            student.copy(studentInfo);
+            Student student = StudentConverter.convert2Student(studentInfo);
             rows += studentRepository.updateByStudentNoAndStatus(student, normalStatus);
         }
         SLogger.info(TAG, "update complete, row=" + rows);

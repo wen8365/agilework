@@ -27,6 +27,9 @@ public enum ErrorCode {
     COURSE_RELATION_QUERY_NOT_EXISTS(1401, "student course relationship not exists"),
     SCHEDULER_UPDATE_PERMISSION_DENIED(1501, "scheduler update permission denied"),
     SCHEDULER_UPDATE_LESSONS_EMPTY(1502, "scheduler update lessons is empty"),
+    GRADE_IMPORT_PERMISSION_DENIED(1601, "grade import permission denied"),
+    GRADE_QUERY_NONE_COURSE_SPECIFIC(1701, "grade query none course specific"),
+    GRADE_QUERY_PERMISSION_DENIED(1702, "grade import permission denied"),
     UNKNOWN(1999, "unknown error");
 
     @Getter

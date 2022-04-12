@@ -1,6 +1,8 @@
 package com.agilework.sims.entity;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.Entity;
@@ -10,7 +12,8 @@ import java.util.Date;
 
 @Entity
 @Table(name = "t_course")
-@Data
+@Getter
+@Setter
 public class Course {
     @Id
     private String courseNo;
@@ -19,6 +22,7 @@ public class Course {
     private String major;
     private int published;
     @Nullable
+    @JsonFormat(timezone = "GMT+8")
     private Date examTime;
     @Nullable
     private int examDuration;

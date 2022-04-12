@@ -1,14 +1,13 @@
 package com.agilework.sims.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.MappedSuperclass;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @MappedSuperclass
 public class StudentBase {
