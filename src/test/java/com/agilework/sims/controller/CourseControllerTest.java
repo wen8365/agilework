@@ -107,7 +107,6 @@ public class CourseControllerTest {
     public void testQueryCourseRecord(){
         LoginReq req = new LoginReq(USER_NAME_1, P);
         LoginResp resp = loginController.login(req);
-        String sessionId=resp.getSessionId();
         Page<Course> res=courseController.queryCourseRecords(USER_NAME_1, 0, 10);
         Assertions.assertEquals(res.getTotalElements(),2);
     }

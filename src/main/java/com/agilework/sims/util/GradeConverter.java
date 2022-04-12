@@ -2,7 +2,10 @@ package com.agilework.sims.util;
 
 import com.agilework.sims.dto.GradeInfo;
 import com.agilework.sims.entity.Grade;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GradeConverter {
     public static Grade convert2Grade(String courseNo, GradeInfo info) {
         Grade grade = new Grade();

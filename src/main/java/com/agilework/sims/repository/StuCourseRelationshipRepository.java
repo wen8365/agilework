@@ -1,7 +1,6 @@
 package com.agilework.sims.repository;
 
 import com.agilework.sims.entity.StudentCourseRelationship;
-import com.agilework.sims.entity.StudentV;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;

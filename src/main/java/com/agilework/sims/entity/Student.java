@@ -1,7 +1,6 @@
 package com.agilework.sims.entity;
 
 import com.agilework.sims.domain.StudentBase;
-import com.agilework.sims.dto.StudentInfo;
 import lombok.Getter;
 import lombok.Setter;
 

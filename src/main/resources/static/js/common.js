@@ -73,17 +73,17 @@ function gotoLogin() {
 // 获取课程表
 function getSchoolTimetable(lessons) {
 	var schoolTimetable=[];
-	for(var i=0; i<7; i++) {
+	for(let i=0; i<7; i++) {
 		schoolTimetable.push([]);
 		for(var j=0; j<11; j++) {
 			schoolTimetable[i].push([]);
 		}
 	}
 	
-	for(var i=0; i<lessons.length; i++) {
-		var dayOfWeek=lessons[i].dayOfWeek;
-		var lessonNo=lessons[i].lessonNo;
-		schoolTimetable[dayOfWeek-1][lessonNo-1].push(lessons[i]);
+	for(let lesson of lessons) {
+		var dayOfWeek=lesson.dayOfWeek;
+		var lessonNo=lesson.lessonNo;
+		schoolTimetable[dayOfWeek-1][lessonNo-1].push(lesson);
 	}
 	
 	return schoolTimetable;

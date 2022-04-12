@@ -3,7 +3,10 @@ package com.agilework.sims.util;
 import com.agilework.sims.dto.StudentInfo;
 import com.agilework.sims.entity.Student;
 import com.agilework.sims.entity.StudentV;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StudentConverter {
     public static Student convert2Student(StudentInfo info) {
         Student student = new Student();
