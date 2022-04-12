@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>SIMS成绩查询</title>
-		<style></style>
 		<script src="js/dependencies.js"></script>
 	</head>
 	<body>
@@ -40,7 +39,7 @@
 								{{page.content[i-1].examAddr}}
 							</td>
 							<td>
-								{{page.content[i-1].finalScore}}
+								{{gradeMap[page.content[i-1].courseNo]}}
 							</td>
 						</tr>
 					</tbody>
@@ -72,20 +71,48 @@
 		        		totalPages: 10,
 		        		content: []
 		        	},
+		        	gradeMap: [],
 					urls: [
-						'queryCourses',
+						'queryCourseRecords',
+						'gradesQuery',
 					]
 				},
 				methods: {
 					doSearch: function(number) {
-						var jsonData={
-							searchText: this.searchText,
-							number: this.page.number,
-		        			size: this.page.size
-						};
+						var url=this.urls[0]+"?studentNo=" + this.studentNo
+							+	"&number=" + (number-1)
+							+	"&size=" + this.page.size;
 		                //发送 get请求
-		                get(this.urls[0], function(res) {
-		                	v.page.content=res.body;
+		                get(url, function(res) {
+		                	v.page=res.body;
+		                	v.gradesQuery(v.page.content);
+		                });
+					},
+					gradesQuery: function(courses) {
+						var courseNoList=[];
+						for(var i=0; i<courses.length; i++) {
+							courseNoList.push(courses[i].courseNo);
+						}
+						var url="gradesQuery?studentNo=" + this.studentNo
+							+	"&courseNoList=" + courseNoList.join(",");
+		                //发送 get请求
+		                get(url, function(res) {
+		                	var errCode=res.body.errCode;
+		                	switch(errCode) {
+		                	case 0:
+		                		var gradeMap={}; 
+		                		var gradeSummaries=res.body.gradeSummaries;
+		                		for(var i=0; i<gradeSummaries.length; i++) {
+		                			gradeMap[gradeSummaries[i].courseNo]=gradeSummaries[i].grade;
+		                		}
+		                		v.gradeMap=gradeMap;
+		                		break;
+							case 1701:
+		                		alert("未指定课程号！");
+		                		break;
+		                	default:
+		                		alert("成绩查询失败！");	
+		                	}
 		                });
 					}
 				},

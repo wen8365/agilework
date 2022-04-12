@@ -5,16 +5,19 @@
 		<title>SIMS成绩导入</title>
 		<style>
 			.subPageBox {
-				padding: 80px 190px 0px !important;
-			}
-			.importBtn h1 {
-				display: inline-block;
+				padding: 80px 80px 0px !important;
 			}
 			td {
-				width: 10%;
+				width: 8.33%;
+			}
+			.selectTd {
+				padding: 0px 1px 0px 6px !important;
 			}
 			.rate {
 				color: deepskyblue;
+			}
+			.whitesmoke {
+				background-color: whitesmoke;
 			}
 		</style>
 		<script src="js/dependencies.js"></script>
@@ -23,8 +26,12 @@
 		<div id="app">
 			<div class="subPageBox">
 				<div class="importBtn">
-					<h1>课程 {{course.courseName}} 成绩导入</h1>
-					<input type="button" class="btn" value="确认导入" v-on:click="importScore()" />
+					<h1>
+						<span>课程 {{course.courseName}} 成绩导入</span>
+						<i v-if="!edited" class="fa fa-edit" v-on:click="edited=true"></i>
+						<i v-if="edited" class="fa fa-save" v-on:click="importScore()"></i>
+						<i v-if="edited" class="fa fa-close" v-on:click="edited=false"></i>
+					</h1>
 				</div>
 				<table class="table importTable">
 					<thead>
@@ -40,39 +47,49 @@
 								<hr />
 							</td>
 						</tr>
-						<tr v-for="i in scores.length">
-							<td>
-								<input type="text" v-model="scores[i-1].studentNo" />
+						<tr name="grade" v-for="i in grades.length">
+							<td v-bind:class="{whitesmoke: !edited, selectTd: true}">
+								<select v-bind:class="{whitesmoke: !edited}" v-model="grades[i-1].studentNo" v-bind:disabled="!edited">
+									<option v-for="i in studentNos.length" v-bind:value="studentNos[i-1]">
+										{{studentNos[i-1]}}
+									</option>
+								</select>
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="datetime-local" v-model="grades[i-1].examTime" v-bind:disabled="!edited" />
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="number" v-model="grades[i-1].uGrade" v-bind:disabled="!edited" />
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="number" class="rate" min="0" max="100" v-model="rate.uRatio" v-bind:disabled="!edited" />
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="number" v-model="grades[i-1].wGrade" v-bind:disabled="!edited" />
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="number" class="rate" min="0" max="100" v-model="rate.wRatio" v-bind:disabled="!edited" />
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="number" v-model="grades[i-1].expGrade" v-bind:disabled="!edited" />
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="number" class="rate" min="0" max="100" v-model="rate.expRatio" v-bind:disabled="!edited" />
+							</td>
+							<td v-bind:class="{whitesmoke: !edited}">
+								<input type="number" v-model="grades[i-1].exaGrade" v-bind:disabled="!edited" />
+							</td>
+							<td class="whitesmoke">
+								<input type="number" class="rate whitesmoke" v-bind:value="getExaRatio()" disabled />
+							</td>
+							<td class="whitesmoke">
+								<input type="number" class="whitesmoke" v-bind:value="getFinalGrade(i-1)" disabled />
 							</td>
 							<td>
-								<input type="number" v-model="scores[i-1].dailyScore" />
-							</td>
-							<td>
-								<input type="number" class="rate" min="0" max="100" v-model="rate.dailyRate" />
-							</td>
-							<td>
-								<input type="number" v-model="scores[i-1].workScore" />
-							</td>
-							<td>
-								<input type="number" class="rate" min="0" max="100" v-model="rate.workRate" />
-							</td>
-							<td>
-								<input type="number" v-model="scores[i-1].expScore" />
-							</td>
-							<td>
-								<input type="number" class="rate" min="0" max="100" v-model="rate.expRate" />
-							</td>
-							<td>
-								<input type="number" v-model="scores[i-1].examScore" />
-							</td>
-							<td style="background-color: whitesmoke;">
-								<input type="number" class="rate" style="background-color: whitesmoke;" v-bind:value="100-rate.dailyRate-rate.workRate-rate.expRate" disabled />
-							</td>
-							<td>
-								<i class="fa fa-trash-o" v-on:click="minus(i-1)"></i>
+								<i v-if="edited" class="fa fa-trash-o" v-on:click="minus(i-1)"></i>
 							</td>
 						</tr>
-						<tr>
+						<tr v-if="edited">
 							<td v-bind:colspan="tableNames.length" class="plus">
 								<i class="fa fa-plus-circle" v-on:click="plus()"></i>
 							</td>
@@ -85,104 +102,133 @@
 			var v=new Vue({
 				el: '#app',
 				data: {
-					tableNames: ["学号", "平时成绩", "平时占比", "作业成绩", "作业占比", "实验成绩", "实验占比", "考试成绩", "考试占比", "操作"],
+					tableNames: ["学号", "考试日期", "平时成绩", "平时占比", "作业成绩", "作业占比", "实验成绩", "实验占比", "考试成绩", "考试占比", "总成绩", "操作"],
+					edited: false,
 					course: {
 						courseNo: '',
 						courseName: ''
 					},
 					rate: {
-						dailyRate: 40,
-						workRate: 0,
-						expRate: 30
+						uRatio: 0,
+						wRatio: 0,
+						expRatio: 0
 					},
-					scores: [
-						{
-							studentNo: 'MF12345678',
-							dailyScore: 70,
-							workScore: 0,
-							expScore: 60,
-							examScore: 80
-						},
-						{
-							studentNo: 'MF12345678',
-							dailyScore: 70,
-							workScore: 0,
-							expScore: 60,
-							examScore: 80
-						},
-						{
-							studentNo: 'MF12345678',
-							dailyScore: 70,
-							workScore: 0,
-							expScore: 60,
-							examScore: 80
-						},
-						{
-							studentNo: 'MF12345678',
-							dailyScore: 70,
-							workScore: 0,
-							expScore: 60,
-							examScore: 80
-						},
-						{
-							studentNo: 'MF12345678',
-							dailyScore: 70,
-							workScore: 0,
-							expScore: 60,
-							examScore: 80
-						},
-						{
-							studentNo: 'MF12345678',
-							dailyScore: 70,
-							workScore: 0,
-							expScore: 60,
-							examScore: 80
-						},
-					],
+					grades: [],
+					studentNos: [],
 					urls: [
 						'findCourse',
-						''
+						'gradeDetailsQuery',
+						'gradeImport',
+						'courseStudentQuery'
 					]
 				},
 				methods: {
 					findCourse: function() {
-						var url=this.urls[0]+"?courseNo="+this.course.courseNo;
 						//发送 get请求
-		                get(url, function(res) {
+		                get(this.urls[0]+"?courseNo="+this.course.courseNo, function(res) {
 		                	v.course=res.body;
 		                });
 					},
-					importScore: function() {
-						var jsonData=this.scores;
-						for(var i=0; i<jsonData.length; i++) {
-							jsonData.dailyRate=this.rate.dailyRate;
-							jsonData.workRate=this.rate.workRate;
-							jsonData.expRate=this.rate.expRate;
-							jsonData.examRate=100-this.rate.dailyRate-this.rate.workRate-this.rate.expRate;
-						}
-						console.log(jsonData);
-						//发送 post请求
-		                post(this.urls[1], JSON.stringify(jsonData), function(res) {
-		                	alert(res.body.message);
+					gradeDetailsQuery: function() {
+						var url=this.urls[1]+"?courseNo="+this.course.courseNo;
+						//发送 get请求
+		                get(url, function(res) {
+		                	var errCode=res.body.errCode;
+		                	switch(errCode) {
+		                	case 0:
+		                		v.grades=res.body.gradeDetailList;
+		                		if(v.grades.length>0) {
+		                			v.rate.uRatio=v.grades[0].uRatio;
+		                			v.rate.wRatio=v.grades[0].wRatio;
+		                			v.rate.expRatio=v.grades[0].expRatio;
+		                			for(var i=0; i<v.grades.length; i++) {
+		                				v.grades[i].examTime=v.grades[i].examTime.substring(0, 19);
+		                			}
+		                		}
+		                		break;
+							case 1702:
+		                		alert("没有查询权限！");
+		                		break;
+		                	default:
+		                		alert("成绩查询失败！");	
+		                	}
 		                });
 					},
+					importScore: function() {
+						var grades=JSON.parse(JSON.stringify(this.grades));
+						for(var i=0; i<grades.length; i++) {
+							grades[i].uRatio=this.rate.uRatio;
+							grades[i].wRatio=this.rate.wRatio;
+							grades[i].expRatio=this.rate.expRatio;
+							grades[i].exaRatio=this.getExaRatio();
+							grades[i].examTime=getDate(grades[i].examTime);
+						}
+						var jsonData={
+							courseNo: this.course.courseNo,
+						  	grades: grades
+						};
+						
+						console.log(jsonData);
+						//发送 post请求
+		                post(this.urls[2], JSON.stringify(jsonData), function(res) {
+		                	var errCode=res.body.errCode;
+		                	switch(errCode) {
+		                	case 0:
+		                		alert("成绩导入成功！");
+		                		break;
+							case 1601:
+		                		alert("没有导入权限！");
+		                		break;
+		                	default:
+		                		alert("成绩导入失败！");	
+		                	}
+		                });
+					},
+					courseStudentQuery: function() {
+						var url = this.urls[3] + "?courseNo=" + this.course.courseNo
+	                       + "&number=0&size=100000000";
+						get(url, function(res) {
+							var students=res.body.content;
+							var studentNos=[];
+							for(var i=0; i<students.length; i++) {
+								studentNos.push(students[i].studentNo);
+							}
+							v.studentNos=studentNos;
+							if(studentNos.length==0) {
+								alert("没有学生选这门课！");
+							}
+						});
+					},
 					plus: function() {
-						this.scores.push({
+						this.grades.push({
 							studentNo: '',
-							dailyScore: 0,
-							workScore: 0,
-							expScore: 0,
-							examScore: 0
+							uGrade: 0,
+							wGrade: 0,
+							expGrade: 0,
+							exaGrade: 0
 						});
 					},
 					minus: function(n) {
-						this.scores.splice(n, 1);
+						this.grades.splice(n, 1);
+					},
+					getExaRatio: function() {
+						return 100-this.rate.uRatio-this.rate.wRatio-this.rate.expRatio;
+					},
+					getFinalGrade: function(n) {
+						return (
+								this.grades[n].uGrade*this.rate.uRatio
+							+	this.grades[n].wGrade*this.rate.wRatio
+							+	this.grades[n].expGrade*this.rate.expRatio
+							+	this.grades[n].exaGrade*this.getExaRatio()
+						)/100;
 					}
 				},
 				mounted() {
 					parent.homePage.innerText="SIMS成绩导入";
 					this.course.courseNo=sessionStorage.getItem("courseNo");
 					this.findCourse();
+					this.gradeDetailsQuery();
+					this.courseStudentQuery();
 				}
 			});
 		</script>
