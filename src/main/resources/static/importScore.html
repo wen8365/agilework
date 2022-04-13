@@ -49,7 +49,7 @@
 						</tr>
 						<tr name="grade" v-for="i in grades.length">
 							<td v-bind:class="{whitesmoke: !edited, selectTd: true}">
-								<select v-bind:class="{whitesmoke: !edited}" v-model="grades[i-1].studentNo" v-bind:disabled="!edited">
+								<select v-bind:class="{whitesmoke: !edited}" style="width: auto;" v-model="grades[i-1].studentNo" v-bind:disabled="!edited">
 									<option v-for="i in studentNos.length" v-bind:value="studentNos[i-1]">
 										{{studentNos[i-1]}}
 									</option>
