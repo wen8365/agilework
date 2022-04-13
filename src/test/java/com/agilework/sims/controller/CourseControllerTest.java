@@ -2,6 +2,7 @@ package com.agilework.sims.controller;
 
 import com.agilework.sims.entity.Course;
 import com.agilework.sims.entity.StudentCourseRelationship;
+import com.agilework.sims.util.ErrorCode;
 import com.agilework.sims.util.SLogger;
 import com.agilework.sims.vo.LoginReq;
 import com.agilework.sims.vo.LoginResp;
@@ -107,6 +108,8 @@ public class CourseControllerTest {
     public void testQueryCourseRecord(){
         LoginReq req = new LoginReq(USER_NAME_1, P);
         LoginResp resp = loginController.login(req);
+        Assertions.assertEquals(resp.getErrCode(), ErrorCode.NORMAL.getCode());
+
         Page<Course> res=courseController.queryCourseRecords(USER_NAME_1, 0, 10);
         Assertions.assertEquals(res.getTotalElements(),2);
     }
